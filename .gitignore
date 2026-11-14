@@ -1,0 +1,90 @@
+#############################
+## Java
+#############################
+.mtj.tmp/
+*.aula
+*.jar
+*.guerra
+*.orelha
+*.nar
+hs_err_pid*
+replay_pid*
+
+#############################
+## Maven
+#############################
+alvo/
+pom.xml.tag
+pom.xml.releaseBackup
+Backup de versões do arquivo pom.xml
+pom.xml.next
+pom.xml.bak
+release.propriedades
+pom.xml com dependências reduzidas
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+#############################
+## Gradle
+#############################
+lixeira/
+construir/
+.gradle
+.gradletasknamecache
+gradle-app.setting
+!gradle-wrapper.jar
+
+#############################
+## IntelliJ
+#############################
+fora/
+.ideia/
+.idea_modules/
+*.iml
+*.ipr
+*.iws
+
+#############################
+## Eclipse
+#############################
+.configurações/
+lixeira/
+temporário/
+.metadados
+.classpath
+.projeto
+*.tmp
+*.bak
+*.swp
+*~.nib
+propriedades locais
+.loadpath
+.caminho_da_fábrica
+
+#############################
+## NetBeans
+#############################
+nbproject/privado/
+construir/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+#############################
+## Visual Studio Code
+#############################
+.vscode/
+.espaço de trabalho de código
+
+#############################
+## OS X
+#############################
+.DS_Store
+
+#############################
+## Diversos
+#############################
+*.registro
