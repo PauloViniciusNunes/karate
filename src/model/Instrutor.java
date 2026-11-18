@@ -34,28 +34,20 @@ public final class Instrutor extends Usuario {
     }
 
     public static List<Instrutor> listarInstrutores() {
-        List<Usuario> usuarios = listarUsuarios();
         List<Instrutor> instrutores = new ArrayList<>();
 
-        for(Usuario usuario : usuarios) {
-            if(usuario instanceof Instrutor instrutor) {
-                instrutores.add(instrutor);
-            }
+        for(Usuario usuario : listarUsuarios()) {
+            if(usuario instanceof Instrutor instrutor) instrutores.add(instrutor);
         }
 
         return instrutores;
     }
 
     public static List<Instrutor> listarInstrutoresPorCargo(CargoInstrutor cargo) {
-        List<Usuario> usuarios = listarUsuarios();
         List<Instrutor> instrutoresCargo = new ArrayList<>();
 
-        for(Usuario usuario : usuarios) {
-            if(usuario instanceof Instrutor instrutor) {
-                if(instrutor.cargo == cargo) {
-                    instrutoresCargo.add(instrutor);
-                }
-            }
+        for(Instrutor instrutor : listarInstrutores()) {
+            if(instrutor.cargo == cargo) instrutoresCargo.add(instrutor);
         }
         return instrutoresCargo;
     }
