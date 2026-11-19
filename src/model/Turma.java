@@ -18,7 +18,7 @@ public class Turma {
     private Instrutor responsavel;
     private ArrayList<Aluno> aluno;
 
-    private static ArrayList<Turma> a = new ArrayList<>();
+    private static ArrayList<Turma> turmas = new ArrayList<>();
 
     public void verTurma() {
         System.out.println("Tuma: " + nome);

@@ -1,90 +1,90 @@
-#############################
+##############################
 ## Java
-#############################
+##############################
 .mtj.tmp/
-*.aula
+*.class
 *.jar
-*.guerra
-*.orelha
+*.war
+*.ear
 *.nar
 hs_err_pid*
 replay_pid*
 
-#############################
+##############################
 ## Maven
-#############################
-alvo/
+##############################
+target/
 pom.xml.tag
 pom.xml.releaseBackup
-Backup de versões do arquivo pom.xml
+pom.xml.versionsBackup
 pom.xml.next
 pom.xml.bak
-release.propriedades
-pom.xml com dependências reduzidas
+release.properties
+dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
-#############################
+##############################
 ## Gradle
-#############################
-lixeira/
-construir/
+##############################
+bin/
+build/
 .gradle
 .gradletasknamecache
 gradle-app.setting
 !gradle-wrapper.jar
 
-#############################
+##############################
 ## IntelliJ
-#############################
-fora/
-.ideia/
+##############################
+out/
+.idea/
 .idea_modules/
 *.iml
 *.ipr
 *.iws
 
-#############################
+##############################
 ## Eclipse
-#############################
-.configurações/
-lixeira/
-temporário/
-.metadados
+##############################
+.settings/
+bin/
+tmp/
+.metadata
 .classpath
-.projeto
+.project
 *.tmp
 *.bak
 *.swp
 *~.nib
-propriedades locais
+local.properties
 .loadpath
-.caminho_da_fábrica
+.factorypath
 
-#############################
+##############################
 ## NetBeans
-#############################
-nbproject/privado/
-construir/
+##############################
+nbproject/private/
+build/
 nbbuild/
 dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
 
-#############################
+##############################
 ## Visual Studio Code
-#############################
+##############################
 .vscode/
-.espaço de trabalho de código
+.code-workspace
 
-#############################
+##############################
 ## OS X
-#############################
+##############################
 .DS_Store
 
-#############################
-## Diversos
-#############################
-*.registro
+##############################
+## Miscellaneous
+##############################
+*.log
