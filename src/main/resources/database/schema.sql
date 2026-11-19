@@ -1,5 +1,5 @@
 create table usuario(
-	id int,
+	id int unique not null,
 	nome varchar(150) not null,
 	cpf varchar(11) unique not null,
 	login text,
@@ -11,15 +11,15 @@ create table usuario(
 );
 
 create table instrutor(
-	id int,
+	id int unique not null,
 	cargo varchar(150),
 	faixa varchar(50),
 	primary key(id),
-	foreign key(id) references usuario(id)
+	foreign key(id) references usuario(id) on delete cascade on update cascade
 );
 
 create table turma(
-	id int,
+	id int unique not null,
 	id_instrutor int not null,
 	nome varchar(150) not null,
 	dias_semanas varchar(150),
@@ -29,17 +29,17 @@ create table turma(
 	faixa_final varchar(50),
 	ativa boolean not null default TRUE,
 	primary key(id),
-	foreign key(id_instrutor) references instrutor(id)
+	foreign key(id_instrutor) references instrutor(id) on delete cascade on update cascade
 );
 
 create table aluno(
-	id int,
+	id int unique not null,
 	id_turma int,
 	data_nascimento date,
 	faixa_atual varchar(50),
 	primary key(id),
 	foreign key(id) references usuario(id),
-	foreign key(id_turma) references turma(id)
+	foreign key(id_turma) references turma(id) on delete cascade on update cascade
 );
 
 create table aula (
@@ -50,29 +50,16 @@ create table aula (
     status varchar(50),
 
     primary key(id),
-    foreign key(id_turma) references turma(id)
+    foreign key(id_turma) references turma(id) on delete cascade on update cascade
 );
 
 -- Presenças
 create table presenca (
-    id_aula int,
+    id_aula int unique not null,
     id_aluno int,
     presente boolean not null,
 
     primary key(id_aula, id_aluno),
-    foreign key(id_aula) references aula(id),
-    foreign key(id_aluno) references aluno(id)
+    foreign key(id_aula) references aula(id) on delete cascade on update cascade,
+    foreign key(id_aluno) references aluno(id) on delete cascade on update cascade
 );
-
--- Teste de operações
-
----- Inserção
-insert into usuario values(1, 'Pedro Leite', 'pedroJJ2', '12345678','pedro@gmail.com', '84991103597',TRUE);
-insert into aluno values(1, '2010-09-01', 'AMARELA');
----- Leitura
-select * from aluno where id = 1;
-
--- Remoção
-drop table aluno;
-drop table instrutor;
-drop table usuario;
