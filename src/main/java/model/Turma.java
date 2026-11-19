@@ -1,7 +1,7 @@
-package model;
+package main.java.model;
 
-import model.enums.DiaSemana;
-import model.enums.Faixa;
+import main.java.model.enums.DiaSemana;
+import main.java.model.enums.Faixa;
 import java.util.List;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -16,16 +16,24 @@ public class Turma {
     private boolean ativa;
 
     private Instrutor responsavel;
-    private ArrayList<Aluno> aluno;
+    private ArrayList<Aluno> alunos = new ArrayList<>();
 
     private static ArrayList<Turma> turmas = new ArrayList<>();
 
+    public void alocarNaTurma(Aluno aluno) {
+        alunos.add(aluno);
+    }
+
+    public List<Aluno> getAlunos() {
+        return alunos;
+    }
+
     public void verTurma() {
-        System.out.println("Tuma: " + nome);
-        responsavel.verInstrutor();
+        System.out.println("Tuma: " + nome + " Status: " + ativa);
+        System.out.println("Instrutor: " + responsavel.getNomeUsuario());
         System.out.println("Horario de aula: " + horaInicio + " as " + horaFim );
         System.out.println("Dias de aula: " + diasSemana);
-        System.out.println("Faixas inicial: " + faixaInicial + " e final " + faixaFinal);
+        System.out.println("Faixas inicial: " + faixaInicial + " e final: " + faixaFinal);
     }
 
     private Turma(Instrutor responsavel, String nome, List<DiaSemana> diasSemana,
@@ -69,6 +77,20 @@ public class Turma {
 
     public static void desativarTurma(Turma turma) {
         turma.ativa = false;
+    }
+
+    public static List<Turma> listarTurmas() {
+        return turmas;
+    }
+
+    public static List<Turma> listarTurmasPorFaixa(Faixa faixa) {
+        List<Turma> turmasPorFaixa = new ArrayList<>();
+        for(Turma turma : listarTurmas()) {
+            if(faixa == turma.faixaInicial) {
+                turmasPorFaixa.add(turma);
+            }
+        }
+        return turmasPorFaixa;
     }
 
 }

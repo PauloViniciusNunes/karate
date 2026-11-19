@@ -1,4 +1,4 @@
-package model;
+package main.java.model;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -57,5 +57,9 @@ public abstract class Usuario {
 
     public static List<Usuario> listarUsuarios() {
         return usuarios;
+    }
+
+    public String getNomeUsuario() {
+        return nome;
     }
 }

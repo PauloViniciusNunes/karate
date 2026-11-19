@@ -1,7 +1,7 @@
-package model;
+package main.java.model;
 
-import model.enums.Faixa;
-import model.enums.CargoInstrutor;
+import main.java.model.enums.Faixa;
+import main.java.model.enums.CargoInstrutor;
 import java.util.List;
 import java.util.ArrayList;
 
