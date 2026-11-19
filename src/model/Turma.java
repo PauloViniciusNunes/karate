@@ -38,7 +38,7 @@ public class Turma {
         this.faixaInicial = faixaInicial;
         this.faixaFinal = faixaFinal;
         this.ativa = true;
-        a.add(this);
+        turmas.add(this);
     }
 
     public static Turma criarTurma(Instrutor responsavel, String nome, List<DiaSemana> diasSemana,
@@ -59,7 +59,7 @@ public class Turma {
     }
 
     public static Turma buscarTurmaPorFaixa(Faixa faixa) {
-        for(Turma turma : a) {
+        for(Turma turma : turmas) {
             if(turma.faixaInicial == faixa) {
                 return turma;
             }
