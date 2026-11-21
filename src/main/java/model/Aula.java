@@ -1,9 +1,9 @@
-package main.java.model;
+package model;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
-import main.java.model.enums.StatusAula;
-import main.java.model.enums.TipoAula;
+import model.enums.StatusAula;
+import model.enums.TipoAula;
 
 
 public class Aula{
