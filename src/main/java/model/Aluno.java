@@ -1,9 +1,9 @@
-package main.java.model;
+package model;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
-import main.java.model.enums.Faixa;
+import model.enums.Faixa;
 
 public class Aluno extends Usuario {
     private Date dataNascimento;

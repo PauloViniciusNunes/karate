@@ -1,7 +1,7 @@
-package main.java.model;
+package model;
 
-import main.java.model.enums.DiaSemana;
-import main.java.model.enums.Faixa;
+import model.enums.DiaSemana;
+import model.enums.Faixa;
 import java.util.List;
 import java.time.LocalTime;
 import java.util.ArrayList;
