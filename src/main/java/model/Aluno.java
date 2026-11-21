@@ -73,5 +73,21 @@ public class Aluno extends Usuario {
         }
         return alunos;
     }
+    
+    public Date getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public Faixa getFaixaAtual() {
+        return faixaAtual;
+    }
+
+    public void setDataNascimento(Date dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
+    public void setFaixaAtual(Faixa faixaAtual) {
+        this.faixaAtual = faixaAtual;
+    }
 
 }

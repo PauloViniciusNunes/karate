@@ -14,6 +14,7 @@ public class Turma {
     private Faixa faixaInicial;
     private Faixa faixaFinal;
     private boolean ativa;
+    private int idTurma;
 
     private Instrutor responsavel;
     private ArrayList<Aluno> alunos = new ArrayList<>();
@@ -91,6 +92,69 @@ public class Turma {
             }
         }
         return turmasPorFaixa;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public List<DiaSemana> getDiasSemana() {
+        return diasSemana;
+    }
+
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
+
+    public LocalTime getHoraFim() {
+        return horaFim;
+    }
+
+    public Faixa getFaixaInicial() {
+        return faixaInicial;
+    }
+
+    public Faixa getFaixaFinal() {
+        return faixaFinal;
+    }
+
+    public boolean getAtiva() {
+        return ativa;
+    }
+    public int getIdTurma() {
+        return idTurma;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setDiasSemana(List<DiaSemana> diasSemana) {
+        this.diasSemana = diasSemana;
+    }
+
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+
+    public void setHoraFim(LocalTime horaFim) {
+        this.horaFim = horaFim;
+    }
+
+    public void setFaixaInicial(Faixa faixaInicial) {
+        this.faixaInicial = faixaInicial;
+    }
+
+    public void setFaixaFinal(Faixa faixaFinal) {
+        this.faixaFinal = faixaFinal;
+    }
+
+    public void setAtiva(boolean ativa) {
+        this.ativa = ativa;
+    }
+
+    public void setIdTurma(int idTurma) {
+        this.idTurma = idTurma;
     }
 
 }
