@@ -52,5 +52,20 @@ public final class Instrutor extends Usuario {
         return instrutoresCargo;
     }
 
-    
+    public CargoInstrutor getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(CargoInstrutor cargo) {
+        this.cargo = cargo;
+    }
+
+    public Faixa getFaixa() {
+        return faixa;
+    }
+
+    public void setFaixa(Faixa faixa) {
+        this.faixa = faixa;
+    }
+
 }

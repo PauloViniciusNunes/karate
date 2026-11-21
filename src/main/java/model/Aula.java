@@ -7,6 +7,8 @@ import model.enums.TipoAula;
 
 
 public class Aula{
+    private int id;
+    private int idTurma;
     private LocalDate data = LocalDate.now();
     private TipoAula tipo;
     private StatusAula status;
@@ -58,5 +60,45 @@ public static Aula criarAula(Turma turma, LocalDate data, TipoAula tipo){
 public static void editarAula(Turma turma, LocalDate data, TipoAula tipo){
 
 }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getIdTurma() {
+        return idTurma;
+    }
+
+    public void setIdTurma(int idTurma) {
+        this.idTurma = idTurma;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+
+    public TipoAula getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoAula tipo) {
+        this.tipo = tipo;
+    }
+
+    public StatusAula getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusAula status) {
+        this.status = status;
+    }
 
 }

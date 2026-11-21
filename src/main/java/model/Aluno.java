@@ -6,8 +6,11 @@ import java.util.Date;
 import model.enums.Faixa;
 
 public class Aluno extends Usuario {
+
+    private int idTurma;
     private Date dataNascimento;
     private Faixa faixaAtual;
+
 
     public void verAluno() {
         verUsuario();
@@ -20,15 +23,16 @@ public class Aluno extends Usuario {
     }
 
     private Aluno(String nome, String cpf, String login, String senha, String email,
-        String telefone, Date dataNascimento) {
+        String telefone, Date dataNascimento, int idTurma) {
         super(nome, cpf, login, senha, email, telefone);
         this.dataNascimento = dataNascimento;
         this.faixaAtual = Faixa.BRANCA;
+        this.idTurma = idTurma;
     }
 
     public static Aluno criarAluno(String nome, String cpf, String login, String senha, String email,
-        String telefone, Date dataNascimento) {
-        return new Aluno(nome, cpf, login, senha, email, telefone, dataNascimento);
+        String telefone, Date dataNascimento, int idTurma) {
+        return new Aluno(nome, cpf, login, senha, email, telefone, dataNascimento, idTurma);
     }
 
     public static void editarAluno(Aluno aluno, String nome, String cpf, String login, String senha, String email,
@@ -74,12 +78,20 @@ public class Aluno extends Usuario {
         return alunos;
     }
     
+    public int getIdTurma() {
+        return this.idTurma;
+    }
+
     public Date getDataNascimento() {
         return dataNascimento;
     }
 
     public Faixa getFaixaAtual() {
         return faixaAtual;
+    }
+
+    public void setIdTurma(int idTurma) {
+        this.idTurma = idTurma;
     }
 
     public void setDataNascimento(Date dataNascimento) {

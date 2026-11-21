@@ -15,6 +15,7 @@ public class Turma {
     private Faixa faixaFinal;
     private boolean ativa;
     private int idTurma;
+    private int idInstrutor;
 
     private Instrutor responsavel;
     private ArrayList<Aluno> alunos = new ArrayList<>();
@@ -40,6 +41,7 @@ public class Turma {
     private Turma(Instrutor responsavel, String nome, List<DiaSemana> diasSemana,
     LocalTime horaInicio, LocalTime horaFim, Faixa faixaInicial, Faixa faixaFinal) {
         this.responsavel = responsavel;
+        this.idInstrutor = responsavel != null ? responsavel.getId() : 0;
         this.nome = nome;
         this.diasSemana = diasSemana;
         this.horaInicio = horaInicio;
@@ -125,6 +127,14 @@ public class Turma {
         return idTurma;
     }
 
+    public int getIdInstrutor() {
+        return idInstrutor;
+    }
+
+    public Instrutor getResponsavel() {
+        return responsavel;
+    }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -155,6 +165,17 @@ public class Turma {
 
     public void setIdTurma(int idTurma) {
         this.idTurma = idTurma;
+    }
+
+    public void setIdInstrutor(int idInstrutor) {
+        this.idInstrutor = idInstrutor;
+    }
+
+    public void setResponsavel(Instrutor responsavel) {
+        this.responsavel = responsavel;
+        if (responsavel != null) {
+            this.idInstrutor = responsavel.getId();
+        }
     }
 
 }
