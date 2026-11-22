@@ -12,54 +12,109 @@ public class Aula{
     private LocalDate data = LocalDate.now();
     private TipoAula tipo;
     private StatusAula status;
-    private ArrayList<String> cpfspresentes = new ArrayList<>();
-    private ArrayList<String> cpfsfaltosos = new ArrayList<>();
+    private ArrayList<String> cpfsPresentes = new ArrayList<>();
+    private ArrayList<String> cpfsFaltosos = new ArrayList<>();
+
+
+    private Aula(int id, int idTurma, LocalDate data, TipoAula tipo ,StatusAula status, ArrayList<String> cpfPresentes, ArrayList<String> cpfsFaltosos){
+        this.id = id;
+        this.idTurma = idTurma;
+        this.data = data;
+        this.tipo = tipo;
+        this.status = status;
+        this.cpfsPresentes = cpfPresentes;
+        this.cpfsFaltosos = cpfsFaltosos;
+        
+    }
+
+    public void verAula(){
+        System.out.println("Data:" + data);
+        System.out.println("Tipo" + data);
+        System.out.println("Status:" + data);
+
+    }
+
+
+    public void registrarPresenca(Aluno aluno){
+        cpfsPresentes.add(aluno.getCpf());
+
+
+
+    }
+
+    public void registrarFalta(Aluno aluno){
+        cpfsFaltosos.add(aluno.getCpf());
+
+
+    }
+
+
+    public void cancelarAula(){
+        this.status = StatusAula.CANCELADA;
+
+    }
+
+    public void encerrarAula(){
+        this.status = StatusAula.REALIZADA;
+
+
+    }
+
+    public  static Aula criarAula(Turma turma, LocalDate data, TipoAula tipo){
+        int novoId;
+        int idDaTurma = turma.getIdTurma();
+        data = LocalDate.now();
+        StatusAula status = StatusAula.AGENDADA;
+        ArrayList<String> cpfsPresentes = new ArrayList<>();
+        ArrayList<String> cpfsFaltosos = new ArrayList<>();
+        
+        if(novoId == null){novoId = 1;}else{novoId = novoId + 1;}
+        
+        
+        
+        
+
+        return new Aula(novoId, idDaTurma, data, tipo, status, cpfsPresentes, cpfsFaltosos);
+
+    }
+
+    public static void editarAula(Turma turma, LocalDate data, TipoAula tipo){
+
+    }
+
+    
+    public static ArrayList<Aula>  listarAulas(){
+        return null;
+
+    }
+    
+    public static ArrayList<Aula> listarAulasPorPeriodo(){
+        return null;
+    }
+
+    public static ArrayList<Aula> listarAulasPorTurma(){
+        return null;
+    }
+
+    public static ArrayList<Aula> listarAulasPorTipo(){
+        return null;
+    }
+
+    public static ArrayList<Aula> listarAulasPorAluno(){
+        return null;
+    }
+    
+    public static ArrayList<Aula> gerarRelatorioAulas(){
+        return null;
+    }
+
+    public static ArrayList<Aula> gerarRelatorioFrequencia(){
+        return null;
+    }
 
 
 
 
-public void verAula(){
-    System.out.println("Data:" + data);
-    System.out.println("Tipo" + data);
-    System.out.println("Status:" + data);
-
-}
-
-
-public void registrarPresenca(Aluno aluno){
-
-
-
-}
-
-public void registrarFalta(Aluno aluno){
-
-
-
-
-}
-
-
-public void cancelarAula(){
-    this.status = StatusAula.CANCELADA;
-
-}
-
-public void encerrarAula(){
-    this.status = StatusAula.REALIZADA;
-
-
-}
-
-public static Aula criarAula(Turma turma, LocalDate data, TipoAula tipo){
-
-    return null;
-
-}
-
-public static void editarAula(Turma turma, LocalDate data, TipoAula tipo){
-
-}
 
     public int getId() {
         return id;
@@ -100,5 +155,7 @@ public static void editarAula(Turma turma, LocalDate data, TipoAula tipo){
     public void setStatus(StatusAula status) {
         this.status = status;
     }
+
+
 
 }
