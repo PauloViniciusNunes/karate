@@ -68,7 +68,7 @@ public class Aula{
         ArrayList<String> cpfsPresentes = new ArrayList<>();
         ArrayList<String> cpfsFaltosos = new ArrayList<>();
         
-        if(novoId == null){novoId = 1;}else{novoId = novoId + 1;}
+        if(novoId == 0){novoId = 1;}else{novoId = novoId + 1;}
         
         
         

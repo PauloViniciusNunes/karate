@@ -101,6 +101,7 @@ public class InstrutorDAO {
         }
     }
 
+    @Deprecated
     public static void deletarInstrutor(int id) throws SQLException {
         String sql = "DELETE from instrutor where id = ?";
 

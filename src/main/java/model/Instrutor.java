@@ -2,8 +2,11 @@ package model;
 
 import model.enums.Faixa;
 import model.enums.CargoInstrutor;
-import java.util.List;
+
 import java.util.ArrayList;
+import java.util.List;
+import dao.InstrutorDAO;
+import java.sql.SQLException;
 
 public final class Instrutor extends Usuario {
     private CargoInstrutor cargo;
@@ -13,6 +16,11 @@ public final class Instrutor extends Usuario {
         super(nome, cpf, login, senha, email, telefone);
         this.cargo = cargo;
         this.faixa = faixa;
+        try {
+            InstrutorDAO.criarInstrutor(this);
+        } catch(SQLException e) {
+            throw new IllegalStateException("Não foi possivel criar o instrutor", e);
+        }
     }
 
     public void verInstrutor() {
@@ -28,19 +36,17 @@ public final class Instrutor extends Usuario {
     }
 
     public static void editarInstrutor(Instrutor instrutor, String nome, String cpf, String login, String senha, String email, String telefone, boolean ativo, CargoInstrutor cargo, Faixa faixa) {
-        editarUsuario(instrutor, nome, cpf, login, senha, email, telefone, ativo);
         instrutor.cargo = cargo;
         instrutor.faixa = faixa;
+        editarUsuario(instrutor, nome, cpf, login, senha, email, telefone, ativo);
     }
 
     public static List<Instrutor> listarInstrutores() {
-        List<Instrutor> instrutores = new ArrayList<>();
-
-        for(Usuario usuario : listarUsuarios()) {
-            if(usuario instanceof Instrutor instrutor) instrutores.add(instrutor);
+        try {
+            return InstrutorDAO.listarInstrutores();
+        } catch(SQLException e) {
+            throw new IllegalStateException("Não foi possivel listar os instrutores", e);
         }
-
-        return instrutores;
     }
 
     public static List<Instrutor> listarInstrutoresPorCargo(CargoInstrutor cargo) {
@@ -50,6 +56,14 @@ public final class Instrutor extends Usuario {
             if(instrutor.cargo == cargo) instrutoresCargo.add(instrutor);
         }
         return instrutoresCargo;
+    }
+
+    public static Instrutor getInstrutor(int id) {
+        try {
+            return InstrutorDAO.encontrarInstrutor(id);
+        } catch(SQLException e) {
+            throw new IllegalStateException("Não foi possivel encontrar o instrutor de id: " + id, e);
+        }
     }
 
     public CargoInstrutor getCargo() {

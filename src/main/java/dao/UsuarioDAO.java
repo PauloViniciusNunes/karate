@@ -111,6 +111,8 @@ public class UsuarioDAO {
         }
     }
 
+
+    @Deprecated 
     public static void deletarUsuario(int id) throws SQLException {
         String sql = "DELETE from usuario where id = ?";
 
