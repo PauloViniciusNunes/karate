@@ -77,37 +77,53 @@ public class Aula{
 
     }
 
-    public static void editarAula(Turma turma, LocalDate data, TipoAula tipo){
+    public static void editarAula(Aula aula, LocalDate data, TipoAula tipo){
+        aula.data = data;
+        aula.tipo = tipo;
 
     }
 
     
-    public static ArrayList<Aula>  listarAulas(){
+     public static ArrayList<Aula>  listarAulas(){
+        ArrayList<Aula> listaDasAulas = new ArrayList<>();
         return null;
 
     }
     
-    public static ArrayList<Aula> listarAulasPorPeriodo(){
+    public static ArrayList<Aula> listarAulasPorPeriodo(LocalDate inicio, LocalDate fim){
+        ArrayList<Aula> listaDasAulas = new ArrayList<>();
+
         return null;
     }
 
-    public static ArrayList<Aula> listarAulasPorTurma(){
+    public static ArrayList<Aula> listarAulasPorTurma(Turma turma){
+        ArrayList<Aula> listaDasAulas = new ArrayList<>();
+
         return null;
     }
 
-    public static ArrayList<Aula> listarAulasPorTipo(){
+    public static ArrayList<Aula> listarAulasPorTipo(TipoAula tipo){
+        ArrayList<Aula> listaDasAulas = new ArrayList<>();
+
         return null;
     }
 
-    public static ArrayList<Aula> listarAulasPorAluno(){
+    public static ArrayList<Aula> listarAulasPorAluno(Aluno aluno){
+        ArrayList<Aula> listaDasAulas = new ArrayList<>();
+
         return null;
     }
     
-    public static ArrayList<Aula> gerarRelatorioAulas(){
+    public static ArrayList<Aula> gerarRelatorioAulas(LocalDate inicio, LocalDate fim, Turma turma, TipoAula tipo){
+        ArrayList<Aula> listaDasAulas = new ArrayList<>();
+
+        
         return null;
     }
 
     public static ArrayList<Aula> gerarRelatorioFrequencia(){
+        
+
         return null;
     }
 
