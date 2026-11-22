@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.Random;
 import model.enums.StatusAula;
 import model.enums.TipoAula;
 
@@ -61,15 +62,13 @@ public class Aula{
     }
 
     public  static Aula criarAula(Turma turma, LocalDate data, TipoAula tipo){
-        int novoId;
+        Random gerarId = new Random();
+        int novoId = gerarId.nextInt(100);
         int idDaTurma = turma.getIdTurma();
         data = LocalDate.now();
         StatusAula status = StatusAula.AGENDADA;
         ArrayList<String> cpfsPresentes = new ArrayList<>();
         ArrayList<String> cpfsFaltosos = new ArrayList<>();
-        
-        if(novoId == null){novoId = 1;}else{novoId = novoId + 1;}
-        
         
         
         
