@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.Random;
 import model.enums.StatusAula;
@@ -66,7 +67,7 @@ public class Aula{
 
     public  static Aula criarAula(Turma turma, LocalDate data, TipoAula tipo){
         Random gerarId = new Random();
-        int novoId = gerarId.nextInt(100);
+        int novoId = gerarId.nextInt(1000);
         int idDaTurma = turma.getIdTurma();
         data = LocalDate.now();
         StatusAula status = StatusAula.AGENDADA;
@@ -145,12 +146,10 @@ public class Aula{
     
     public static ArrayList<Aula> gerarRelatorioAulas(LocalDate inicio, LocalDate fim, Turma turma, TipoAula tipo){
         ArrayList<Aula> listaAulasRelatorio = new ArrayList<>();
-
         ArrayList<Aula> listaAulasRelatorioData = listarAulasPorPeriodo(inicio, fim);
         ArrayList<Aula> porTurma = listarAulasPorTurma(turma); 
         ArrayList<Aula> porTipo = listarAulasPorTipo(tipo);
         
-
         for (Aula aulaRelatorio  : listaAulasRelatorioData) {
 
             if(porTurma.contains(aulaRelatorio) && porTipo.contains(aulaRelatorio)){
@@ -158,22 +157,28 @@ public class Aula{
             } 
             
         }
-
+        
         return listaAulasRelatorio;
     }
     
 
-    public static ArrayList<Aula> gerarRelatorioFrequencia(){
-        ArrayList<Aula> listaAulas = new ArrayList<>();
-
+    public static ArrayList<Aula> gerarRelatorioFrequencia(Aluno aluno, LocalDate inicio, LocalDate fim){ 
+        ArrayList<Aula> alunosFrequencia = new ArrayList<>() ;
+        ArrayList<Aula> listaAulasRelatorioData = listarAulasPorPeriodo(inicio, fim);
         
-        
+        for (Aula aula : listaAulasRelatorioData) {
+            if(aula.cpfsPresentes.contains(aluno.getCpf())){
+                alunosFrequencia.add(aula);
 
-        return null;
+            }
+
+            
+        }
+    
+    return alunosFrequencia;
     }
 
-
-
+        
 
 
     public int getId() {
