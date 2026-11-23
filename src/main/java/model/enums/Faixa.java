@@ -9,4 +9,14 @@ public enum Faixa {
     ROXA,
     MARROM,
     PRETA;
+
+
+    public static Faixa getFaixaByName(String nome) {
+        for (Faixa faixa : Faixa.values()) {
+            if (faixa.name().equalsIgnoreCase(nome)) {
+                return faixa;
+            }
+        }
+        return null;
+    }
 }

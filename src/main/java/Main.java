@@ -3,6 +3,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import model.*;
+import model.enums.*;
+import view.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -27,5 +30,9 @@ public class Main {
             System.err.println("SQLState: " + e.getSQLState());
             e.printStackTrace();
         }
+
+        Usuario adm = Instrutor.criarInstrutor("Joao", "11111111111", "joaosouza", "1234", "joaovictor@gmail.com", "88 98147-9158", CargoInstrutor.COORDENADOR, Faixa.PRETA);
+
+        TelaLogin.iniciarLogin();
     }
 }

@@ -129,6 +129,7 @@ public abstract class Usuario {
 
 
     public void verUsuario() {
+        System.out.println("ID: " + id);
         System.out.println("Nome: " + nome);
         System.out.println("CPF: " + cpf);
         System.out.println("e-mail: " + email);
@@ -187,7 +188,7 @@ public abstract class Usuario {
         }
     }
 
-    public String getNomeUsuario() {
-        return nome;
+    public static int getIdLogado() {
+        return idLogado;
     }
 }
