@@ -63,7 +63,7 @@ public class Aula{
 
     public  static Aula criarAula(Turma turma, LocalDate data, TipoAula tipo){
         Random gerarId = new Random();
-        int novoId = gerarId.nextInt(100);
+        int novoId = gerarId.nextInt(1000);
         int idDaTurma = turma.getIdTurma();
         data = LocalDate.now();
         StatusAula status = StatusAula.AGENDADA;
@@ -84,10 +84,16 @@ public class Aula{
     }
 
     
-     public static ArrayList<Aula>  listarAulas(){
-        ArrayList<Aula> listaDasAulas = new ArrayList<>();
-        return null;
+    public static ArrayList<Aula> listarAulasPorTipo(TipoAula tipo){
+        ArrayList<Aula> listaAulas = new ArrayList<>();
 
+        for (Aula listaPorTipo : listaDeAulas) {
+            if(tipo == listaPorTipo.tipo){
+                listaAulas.add(listaPorTipo);
+            }
+        }
+
+        return listaAulas;
     }
     
     public static ArrayList<Aula> listarAulasPorPeriodo(LocalDate inicio, LocalDate fim){
@@ -103,15 +109,31 @@ public class Aula{
     }
 
     public static ArrayList<Aula> listarAulasPorTipo(TipoAula tipo){
-        ArrayList<Aula> listaDasAulas = new ArrayList<>();
+        ArrayList<Aula> listaAulas = new ArrayList<>();
 
-        return null;
+        for (Aula listaPorTipo : listaDeAulas) {
+            if(tipo == listaPorTipo.tipo){
+                listaAulas.add(listaPorTipo);
+            }
+        }
+
+        return listaAulas;
     }
 
     public static ArrayList<Aula> listarAulasPorAluno(Aluno aluno){
-        ArrayList<Aula> listaDasAulas = new ArrayList<>();
+        ArrayList<Aula> listaAulas = new ArrayList<>();
 
-        return null;
+
+        for (Aula listandoAluno : listaDeAulas){
+            if(listandoAluno.cpfsPresentes.contains(aluno.getCpf())){
+                listaAulas.add(listandoAluno);
+
+            }
+
+        }
+
+
+        return listaAulas;
     }
     
     public static ArrayList<Aula> gerarRelatorioAulas(LocalDate inicio, LocalDate fim, Turma turma, TipoAula tipo){
