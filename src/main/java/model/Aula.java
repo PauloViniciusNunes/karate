@@ -1,9 +1,8 @@
 package model;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.Random;
-
 import model.enums.StatusAula;
 import model.enums.TipoAula;
 
@@ -16,6 +15,7 @@ public class Aula{
     private StatusAula status;
     private ArrayList<String> cpfsPresentes = new ArrayList<>();
     private ArrayList<String> cpfsFaltosos = new ArrayList<>();
+
 
     private static ArrayList<Aula> listaDeAulas = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class Aula{
 
     public void verAula(){
         System.out.println("Data:" + data);
-        System.out.println("Tipo" + data);
+        System.out.println("Tipo:" + data);
         System.out.println("Status:" + data);
 
     }
@@ -66,7 +66,7 @@ public class Aula{
 
     public  static Aula criarAula(Turma turma, LocalDate data, TipoAula tipo){
         Random gerarId = new Random();
-        int novoId = gerarId.nextInt(1000);
+        int novoId = gerarId.nextInt(100);
         int idDaTurma = turma.getIdTurma();
         data = LocalDate.now();
         StatusAula status = StatusAula.AGENDADA;
@@ -87,56 +87,86 @@ public class Aula{
     }
 
     
-    public static ArrayList<Aula> listarAulasPorTipo(TipoAula tipo){
-        ArrayList<Aula> listaAulas = new ArrayList<>();
+    public static ArrayList<Aula> listarAulas(){
+        return listaDeAulas;
 
-        for (Aula listaPorTipo : listaDeAulas) {
-            if(tipo == listaPorTipo.tipo){
-                listaAulas.add(listaPorTipo);
-            }
-        }
-
-        return listaAulas;
     }
     
     public static ArrayList<Aula> listarAulasPorPeriodo(LocalDate inicio, LocalDate fim){
-        ArrayList<Aula> listaDasAulas = new ArrayList<>();
+        ArrayList<Aula> listaAulasPeriodo = new ArrayList<>();
 
-        return null;
+        for (Aula buscaPeriodo : listarAulas()) {
+            if(buscaPeriodo.data.isBefore(fim) && buscaPeriodo.data.isAfter(inicio)){
+                listaAulasPeriodo.add(buscaPeriodo);
+            }
+        }
+        return listaAulasPeriodo;
     }
-
     public static ArrayList<Aula> listarAulasPorTurma(Turma turma){
-        ArrayList<Aula> listaDasAulas = new ArrayList<>();
+        ArrayList<Aula> listaAulasTurma = new ArrayList<>();
+        
+        for (Aula listaPorTurma : listarAulas()) {
+            if(listaPorTurma.idTurma == turma.getIdTurma()){
+                listaAulasTurma.add(listaPorTurma);
+            }
+            
+        }
 
-        return null;
+        return listaAulasTurma;
     }
 
+    public static ArrayList<Aula> listarAulasPorTipo(TipoAula tipo){
+        ArrayList<Aula> listaAulasTipo = new ArrayList<>();
 
+        for (Aula listaPorTipo : listarAulas()) {
+            if(tipo == listaPorTipo.tipo){ 
+                listaAulasTipo.add(listaPorTipo);
+            }
+        }
+
+        return listaAulasTipo;
+    }
 
     public static ArrayList<Aula> listarAulasPorAluno(Aluno aluno){
-        ArrayList<Aula> listaAulas = new ArrayList<>();
+        ArrayList<Aula> listaAulasAluno = new ArrayList<>();
+        
 
-
-        for (Aula listandoAluno : listaDeAulas){
+        for (Aula listandoAluno : listarAulas()){
             if(listandoAluno.cpfsPresentes.contains(aluno.getCpf())){
-                listaAulas.add(listandoAluno);
+                listaAulasAluno.add(listandoAluno);
 
             }
-
+            
         }
 
 
-        return listaAulas;
+        return listaAulasAluno;
     }
     
     public static ArrayList<Aula> gerarRelatorioAulas(LocalDate inicio, LocalDate fim, Turma turma, TipoAula tipo){
-        ArrayList<Aula> listaDasAulas = new ArrayList<>();
+        ArrayList<Aula> listaAulasRelatorio = new ArrayList<>();
 
+        ArrayList<Aula> listaAulasRelatorioData = listarAulasPorPeriodo(inicio, fim);
+        ArrayList<Aula> porTurma = listarAulasPorTurma(turma); 
+        ArrayList<Aula> porTipo = listarAulasPorTipo(tipo);
         
-        return null;
+
+        for (Aula aulaRelatorio  : listaAulasRelatorioData) {
+
+            if(porTurma.contains(aulaRelatorio) && porTipo.contains(aulaRelatorio)){
+                listaAulasRelatorio.add(aulaRelatorio);
+            } 
+            
+        }
+
+        return listaAulasRelatorio;
     }
+    
 
     public static ArrayList<Aula> gerarRelatorioFrequencia(){
+        ArrayList<Aula> listaAulas = new ArrayList<>();
+
+        
         
 
         return null;
