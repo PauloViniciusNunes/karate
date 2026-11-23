@@ -1,9 +1,12 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import dao.AulaDAO;
+
 import java.lang.reflect.Array;
 import java.time.LocalDate;
-import java.util.Random;
 import model.enums.StatusAula;
 import model.enums.TipoAula;
 
@@ -21,16 +24,24 @@ public class Aula{
     private static ArrayList<Aula> listaDeAulas = new ArrayList<>();
 
 
-    private Aula(int id, int idTurma, LocalDate data, TipoAula tipo ,StatusAula status, ArrayList<String> cpfPresentes, ArrayList<String> cpfsFaltosos){
-        this.id = id;
+    public Aula(int id, int idTurma, LocalDate data, TipoAula tipo ,StatusAula status, ArrayList<String> cpfPresentes, ArrayList<String> cpfsFaltosos){
         this.idTurma = idTurma;
         this.data = data;
         this.tipo = tipo;
         this.status = status;
-        this.cpfsPresentes = cpfPresentes;
-        this.cpfsFaltosos = cpfsFaltosos;
-        
+        this.cpfsPresentes = (cpfPresentes == null) ? new ArrayList<>() : cpfPresentes;
+        this.cpfsFaltosos = (cpfsFaltosos == null) ? new ArrayList<>() : cpfsFaltosos;
+
+
+        try {
+            AulaDAO.criarAula(this);
+        } catch (Exception e) {
+            throw new IllegalStateException("Não foi possivel criar a aula ", e);        
+        }
     }
+    
+        
+    
 
     public void verAula(){
         System.out.println("Data:" + data);
@@ -41,11 +52,16 @@ public class Aula{
 
 
     public void registrarPresenca(Aluno aluno){
-        cpfsPresentes.add(aluno.getCpf());
-
-
-
+        try {
+            AulaDAO.salvarPresenca(aluno.getId(), aluno.getCpf(), true);
+        } catch (Exception e) {
+            throw new IllegalStateException("Não foi possivel registrar a presença ", e);
+        }
     }
+
+
+
+
 
     public void registrarFalta(Aluno aluno){
         cpfsFaltosos.add(aluno.getCpf());
@@ -56,24 +72,35 @@ public class Aula{
 
     public void cancelarAula(){
         this.status = StatusAula.CANCELADA;
-
+        try {
+            AulaDAO.atualizarAula(this);
+        } catch (Exception e) {
+            throw new IllegalStateException("Não foi possivel atualizar a aula ", e);
+        }
     }
+
+    
 
     public void encerrarAula(){
         this.status = StatusAula.REALIZADA;
+        try {
+            AulaDAO.atualizarAula(this);
+        } catch (Exception e) {
+            throw new IllegalStateException("Não foi possivel atualizar a aula ", e);
+        }
 
 
     }
 
     public  static Aula criarAula(Turma turma, LocalDate data, TipoAula tipo){
-        Random gerarId = new Random();
-        int novoId = gerarId.nextInt(1000);
+        
+        
+        int novoId = listarAulas().size() + 1;
         int idDaTurma = turma.getIdTurma();
         data = LocalDate.now();
         StatusAula status = StatusAula.AGENDADA;
         ArrayList<String> cpfsPresentes = new ArrayList<>();
         ArrayList<String> cpfsFaltosos = new ArrayList<>();
-        
         
         
 
@@ -85,15 +112,27 @@ public class Aula{
         aula.data = data;
         aula.tipo = tipo;
 
+        try {
+            AulaDAO.atualizarAula(aula);
+        } catch (Exception e) {
+            throw new IllegalStateException("Não foi possivel atualizar a aula ", e);
+        }
     }
 
     
-    public static ArrayList<Aula> listarAulas(){
-        return listaDeAulas;
-
-    }
     
-    public static ArrayList<Aula> listarAulasPorPeriodo(LocalDate inicio, LocalDate fim){
+    public static List<Aula> listarAulas(){
+        try {
+            return AulaDAO.listarAulas();
+        } catch (Exception e) {
+            throw new IllegalStateException("Não foi possivel listar aulas ", e);
+        }
+       
+    }
+
+
+    
+    public static List<Aula> listarAulasPorPeriodo(LocalDate inicio, LocalDate fim){
         ArrayList<Aula> listaAulasPeriodo = new ArrayList<>();
 
         for (Aula buscaPeriodo : listarAulas()) {
@@ -103,7 +142,10 @@ public class Aula{
         }
         return listaAulasPeriodo;
     }
-    public static ArrayList<Aula> listarAulasPorTurma(Turma turma){
+
+
+
+    public static List<Aula> listarAulasPorTurma(Turma turma){
         ArrayList<Aula> listaAulasTurma = new ArrayList<>();
         
         for (Aula listaPorTurma : listarAulas()) {
@@ -116,7 +158,7 @@ public class Aula{
         return listaAulasTurma;
     }
 
-    public static ArrayList<Aula> listarAulasPorTipo(TipoAula tipo){
+    public static List<Aula> listarAulasPorTipo(TipoAula tipo){
         ArrayList<Aula> listaAulasTipo = new ArrayList<>();
 
         for (Aula listaPorTipo : listarAulas()) {
@@ -128,7 +170,7 @@ public class Aula{
         return listaAulasTipo;
     }
 
-    public static ArrayList<Aula> listarAulasPorAluno(Aluno aluno){
+    public static List<Aula> listarAulasPorAluno(Aluno aluno){
         ArrayList<Aula> listaAulasAluno = new ArrayList<>();
         
 
@@ -144,27 +186,27 @@ public class Aula{
         return listaAulasAluno;
     }
     
-    public static ArrayList<Aula> gerarRelatorioAulas(LocalDate inicio, LocalDate fim, Turma turma, TipoAula tipo){
-        ArrayList<Aula> listaAulasRelatorio = new ArrayList<>();
-        ArrayList<Aula> listaAulasRelatorioData = listarAulasPorPeriodo(inicio, fim);
-        ArrayList<Aula> porTurma = listarAulasPorTurma(turma); 
-        ArrayList<Aula> porTipo = listarAulasPorTipo(tipo);
-        
-        for (Aula aulaRelatorio  : listaAulasRelatorioData) {
+    public static List<Aula> gerarRelatorioAulas(LocalDate inicio, LocalDate fim, Turma turma, TipoAula tipo){
+        List<Aula>listaAulasRelatorio = new ArrayList<>();
 
-            if(porTurma.contains(aulaRelatorio) && porTipo.contains(aulaRelatorio)){
+        for (Aula aulaRelatorio : listarAulas()) {
+            boolean noPeriodo = aulaRelatorio.data.isBefore(fim) && aulaRelatorio.data.isAfter(inicio);
+            boolean daTurma   = aulaRelatorio.idTurma == turma.getIdTurma();
+            boolean doTipo    = aulaRelatorio.tipo == tipo;
+
+            if(noPeriodo && daTurma && doTipo){
                 listaAulasRelatorio.add(aulaRelatorio);
-            } 
-            
+            }
         }
-        
+
         return listaAulasRelatorio;
     }
     
+    
 
-    public static ArrayList<Aula> gerarRelatorioFrequencia(Aluno aluno, LocalDate inicio, LocalDate fim){ 
+    public static List<Aula> gerarRelatorioFrequencia(Aluno aluno, LocalDate inicio, LocalDate fim){ 
         ArrayList<Aula> alunosFrequencia = new ArrayList<>() ;
-        ArrayList<Aula> listaAulasRelatorioData = listarAulasPorPeriodo(inicio, fim);
+        List<Aula> listaAulasRelatorioData = listarAulasPorPeriodo(inicio, fim);
         
         for (Aula aula : listaAulasRelatorioData) {
             if(aula.cpfsPresentes.contains(aluno.getCpf())){
@@ -221,6 +263,12 @@ public class Aula{
         this.status = status;
     }
 
+    public ArrayList<String> getCpfsPresentes() {
+        return cpfsPresentes;
+    }
 
-
+    public ArrayList<String> getCpfsFaltosos() {
+        return cpfsFaltosos;
 }
+}
+

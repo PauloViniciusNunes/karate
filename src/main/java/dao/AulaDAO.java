@@ -117,20 +117,48 @@ public class AulaDAO {
     }
 
     public static void deletarAula(int id) throws SQLException {
+        String sqlPresencas = "delete from aula_presenca where id_aula = ?";
         String sql = "DELETE from aula where id = ?";
 
         try(
             Connection conn = Conexao.getConnection();
+            PreparedStatement stmtPresencas = conn.prepareStatement(sqlPresencas);
             PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
-            stmt.setInt(1, id);
+            
+            stmtPresencas.setInt(1, id);
+            stmtPresencas.executeUpdate();
 
+            stmt.setInt(1, id);
             stmt.executeUpdate();
         }
     }
 
+    
+    public static void salvarPresenca(int idAula, String cpfAluno, boolean presente) throws SQLException {
+        String sqlUpdate = "update aula_presenca set presente = ? where id_aula = ? and cpf_aluno = ?";
+        String sqlInsert = "insert into aula_presenca (id_aula, cpf_aluno, presente) values (?, ?, ?)";
+
+        try(
+            Connection conn = Conexao.getConnection();
+            PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate);
+            PreparedStatement stmtInsert = conn.prepareStatement(sqlInsert)
+        ) {
+            stmtUpdate.setBoolean(1, presente);
+            stmtUpdate.setInt(2, idAula);
+            stmtUpdate.setString(3, cpfAluno);
+
+            if(stmtUpdate.executeUpdate() == 0) {
+                stmtInsert.setInt(1, idAula);
+                stmtInsert.setString(2, cpfAluno);
+                stmtInsert.setBoolean(3, presente);
+                stmtInsert.executeUpdate();
+            }
+        }
+    }
+
     private static Aula montarAula(ResultSet rs) throws SQLException {
-        Aula aula = new Aula();
+        Aula aula = new Aula(0, 0, null, null, null, null, null);
         aula.setId(rs.getInt("id"));
         aula.setIdTurma(rs.getInt("id_turma"));
 
@@ -149,7 +177,32 @@ public class AulaDAO {
             aula.setStatus(StatusAula.valueOf(status.trim().toUpperCase()));
         }
 
+        carregarPresencas(aula);
+
         return aula;
+    }
+
+    
+    private static void carregarPresencas(Aula aula) throws SQLException {
+        String sql = "select cpf_aluno, presente from aula_presenca where id_aula = ?";
+
+        try(
+            Connection conn = Conexao.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, aula.getId());
+
+            try(ResultSet rs = stmt.executeQuery()) {
+                while(rs.next()) {
+                    String cpf = rs.getString("cpf_aluno");
+                    if(rs.getBoolean("presente")) {
+                        aula.getCpfsPresentes().add(cpf);
+                    } else {
+                        aula.getCpfsFaltosos().add(cpf);
+                    }
+                }
+            }
+        }
     }
 
 }
