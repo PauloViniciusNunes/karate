@@ -3,6 +3,11 @@ package model;
 import model.enums.DiaSemana;
 import model.enums.Faixa;
 import java.util.List;
+
+import dao.AlunoDAO;
+import dao.TurmaDAO;
+
+import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -16,14 +21,19 @@ public class Turma {
     private boolean ativa;
     private int idTurma;
     private int idInstrutor;
-
     private Instrutor responsavel;
+
     private ArrayList<Aluno> alunos = new ArrayList<>();
 
-    private static ArrayList<Turma> turmas = new ArrayList<>();
 
     public void alocarNaTurma(Aluno aluno) {
         alunos.add(aluno);
+        aluno.setIdTurma(this.idTurma);
+        try {
+            AlunoDAO.atualizarAluno(aluno);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Não foi possível alocar o aluno na turma", e);
+        }
     }
 
     public List<Aluno> getAlunos() {
@@ -49,7 +59,11 @@ public class Turma {
         this.faixaInicial = faixaInicial;
         this.faixaFinal = faixaFinal;
         this.ativa = true;
-        turmas.add(this);
+        try{
+            TurmaDAO.criarTurma(this);
+        } catch(SQLException e) {
+             throw new IllegalStateException("Não foi possivel criar a turma", e);
+        }
     }
 
     public static Turma criarTurma(Instrutor responsavel, String nome, List<DiaSemana> diasSemana,
@@ -70,7 +84,7 @@ public class Turma {
     }
 
     public static Turma buscarTurmaPorFaixa(Faixa faixa) {
-        for(Turma turma : turmas) {
+        for(Turma turma : listarTurmas()) {
             if(turma.faixaInicial == faixa) {
                 return turma;
             }
@@ -83,7 +97,11 @@ public class Turma {
     }
 
     public static List<Turma> listarTurmas() {
-        return turmas;
+        try {
+            return TurmaDAO.listarTurmas();
+        } catch(SQLException e) {
+             throw new IllegalStateException("Não foi possivel listar as turmas", e);
+        }
     }
 
     public static List<Turma> listarTurmasPorFaixa(Faixa faixa) {
@@ -94,6 +112,14 @@ public class Turma {
             }
         }
         return turmasPorFaixa;
+    }
+
+    public Turma geTurma(int idTurma) {
+        try {
+            return TurmaDAO.encontrarTurma(idTurma);
+        } catch(SQLException e) {
+             throw new IllegalStateException("Não foi possivel encontrar a turma de id: " + idTurma, e);
+        }
     }
 
     public String getNome() {

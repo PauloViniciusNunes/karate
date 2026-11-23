@@ -1,7 +1,11 @@
 package model;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import dao.AlunoDAO;
+
 import java.util.Date;
 import model.enums.Faixa;
 
@@ -28,6 +32,11 @@ public class Aluno extends Usuario {
         this.dataNascimento = dataNascimento;
         this.faixaAtual = Faixa.BRANCA;
         this.idTurma = idTurma;
+        try {
+            AlunoDAO.criarAluno(this);
+        } catch(SQLException e) {
+             throw new IllegalStateException("Não foi possivel criar o aluno", e);
+        }
     }
 
     public static Aluno criarAluno(String nome, String cpf, String login, String senha, String email,
@@ -43,11 +52,11 @@ public class Aluno extends Usuario {
     }
 
     public static List<Aluno> listarAlunos() {
-        List<Aluno> alunos = new ArrayList<>();
-        for(Usuario usuario : listarUsuarios()) {
-            if(usuario instanceof Aluno aluno) alunos.add(aluno);
+        try {
+            return AlunoDAO.listarAlunos();
+        } catch(SQLException e) {
+             throw new IllegalStateException("Não foi possivel listar os alunos", e);
         }
-        return alunos;
     }
 
     public static List<Aluno> buscarAlunosPorNome(String nome) {
@@ -76,6 +85,14 @@ public class Aluno extends Usuario {
             alunos.add(aluno);
         }
         return alunos;
+    }
+
+    public Aluno getAluno(int id) {
+        try {
+            return AlunoDAO.encontrarAluno(id);
+        } catch(SQLException e) {
+             throw new IllegalStateException("Não foi possivel encontrar o aluno de id: " + id, e);
+        }
     }
     
     public int getIdTurma() {
