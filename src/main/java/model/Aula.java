@@ -1,8 +1,9 @@
 package model;
 
-import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Random;
+
 import model.enums.StatusAula;
 import model.enums.TipoAula;
 
@@ -15,6 +16,8 @@ public class Aula{
     private StatusAula status;
     private ArrayList<String> cpfsPresentes = new ArrayList<>();
     private ArrayList<String> cpfsFaltosos = new ArrayList<>();
+
+    private static ArrayList<Aula> listaDeAulas = new ArrayList<>();
 
 
     private Aula(int id, int idTurma, LocalDate data, TipoAula tipo ,StatusAula status, ArrayList<String> cpfPresentes, ArrayList<String> cpfsFaltosos){
@@ -108,17 +111,7 @@ public class Aula{
         return null;
     }
 
-    public static ArrayList<Aula> listarAulasPorTipo(TipoAula tipo){
-        ArrayList<Aula> listaAulas = new ArrayList<>();
 
-        for (Aula listaPorTipo : listaDeAulas) {
-            if(tipo == listaPorTipo.tipo){
-                listaAulas.add(listaPorTipo);
-            }
-        }
-
-        return listaAulas;
-    }
 
     public static ArrayList<Aula> listarAulasPorAluno(Aluno aluno){
         ArrayList<Aula> listaAulas = new ArrayList<>();
