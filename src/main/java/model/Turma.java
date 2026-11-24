@@ -41,8 +41,8 @@ public class Turma {
     }
 
     public void verTurma() {
-        System.out.println("Tuma: " + nome + " Status: " + ativa);
-        System.out.println("Instrutor: " + responsavel.getNomeUsuario());
+        System.out.println("Tuma: " + nome + " ID da turma: " + idTurma + " Status: " + ativa);
+        System.out.println("Instrutor: " + responsavel.getNome());
         System.out.println("Horario de aula: " + horaInicio + " as " + horaFim );
         System.out.println("Dias de aula: " + diasSemana);
         System.out.println("Faixas inicial: " + faixaInicial + " e final: " + faixaFinal);

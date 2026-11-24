@@ -62,7 +62,7 @@ public class Aluno extends Usuario {
     public static List<Aluno> buscarAlunosPorNome(String nome) {
         List<Aluno> alunos = new ArrayList<>();
         for(Aluno aluno : listarAlunos()) {
-            if(nome.equals(aluno.getNomeUsuario())) {
+            if(nome.equals(aluno.getNome())) {
                 alunos.add(aluno);
             }
         }
