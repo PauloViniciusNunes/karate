@@ -1,8 +1,8 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.sql.SQLException;
-import dao.UsuarioDAO;
+import java.util.Objects;
 
 public abstract class Usuario {
 
@@ -16,6 +16,7 @@ public abstract class Usuario {
     private boolean ativo;
 
     private static int idLogado = -1;
+    private static final List<Usuario> listaUsuarios = new ArrayList<>();
 
     public Usuario(String nome, String cpf, String login, String senha, String email, String telefone) {
         this.nome = nome;
@@ -25,107 +26,18 @@ public abstract class Usuario {
         this.email = email;
         this.telefone = telefone;
         this.ativo = true;
-
-        try {
-            UsuarioDAO.criarUsuario(this);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível criar o usuário.", e);
-        }
     }
 
-    public int getId() {
-        return id;
-    }
-
-
-    public void setId(int id) {
+    protected Usuario(int id, String nome, String cpf, String login, String senha, String email, String telefone, boolean ativo) {
         this.id = id;
-    }
-
-
-
-    public String getNome() {
-        return nome;
-    }
-
-
-
-    public void setNome(String nome) {
         this.nome = nome;
-    }
-
-
-
-    public String getCpf() {
-        return cpf;
-    }
-
-
-
-    public void setCpf(String cpf) {
         this.cpf = cpf;
-    }
-
-
-
-    public String getLogin() {
-        return login;
-    }
-
-
-
-    public void setLogin(String login) {
         this.login = login;
-    }
-
-
-
-    public String getSenha() {
-        return senha;
-    }
-
-
-
-    public void setSenha(String senha) {
         this.senha = senha;
-    }
-
-
-
-    public String getEmail() {
-        return email;
-    }
-
-
-
-    public void setEmail(String email) {
         this.email = email;
-    }
-
-
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-
-
-    public void setTelefone(String telefone) {
         this.telefone = telefone;
-    }
-
-
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-
-
-    public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }
-
 
 
     public void verUsuario() {
@@ -138,6 +50,9 @@ public abstract class Usuario {
     }
 
     public static void editarUsuario(Usuario usuario, String nome, String cpf, String login, String senha, String email, String telefone, boolean ativo) {
+        if (usuario == null) {
+            return;
+        }
         usuario.nome = nome;
         usuario.cpf = cpf;
         usuario.login = login;
@@ -145,26 +60,30 @@ public abstract class Usuario {
         usuario.email = email;
         usuario.telefone = telefone;
         usuario.ativo = ativo;
-
-        try {
-            UsuarioDAO.atualizarUsuario(usuario);
-        } catch(SQLException e) {
-            throw new IllegalStateException("Não foi possivel atualizar o usuario ", e);
-        }
     }
 
     public static void desativarUsuario(Usuario usuario) {
-        usuario.ativo = false;
-        try {
-            UsuarioDAO.atualizarUsuario(usuario);
-        } catch(SQLException e) {
-            throw new IllegalStateException("Não foi possivel atualizar o usuario ", e);
+        if (usuario != null) {
+            usuario.ativo = false;
         }
     }
 
+    public boolean validarCredenciais(String login, String senha) {
+        return this.ativo
+                && Objects.equals(this.login, login)
+                && Objects.equals(this.senha, senha);
+    }
+
     public static boolean autenticar(String login, String senha) {
-        for(Usuario usuario : listarUsuarios()) {
-            if(usuario.ativo == true && usuario.login == login  && usuario.senha == senha) {
+        return autenticar(login, senha, listarUsuarios());
+    }
+
+    public static boolean autenticar(String login, String senha, List<Usuario> usuarios) {
+        if (usuarios == null) {
+            return false;
+        }
+        for (Usuario usuario : usuarios) {
+            if (usuario != null && usuario.validarCredenciais(login, senha)) {
                 Usuario.idLogado = usuario.id;
                 return true;
             }
@@ -173,22 +92,93 @@ public abstract class Usuario {
     }
 
     public static List<Usuario> listarUsuarios() {
-        try {
-            return UsuarioDAO.listarUsuarios();
-        } catch(SQLException e) {
-            throw new IllegalStateException("Não foi possivel listar os usuarios", e);
-        }
+        return new ArrayList<>(listaUsuarios);
     }
 
     public static Usuario getUsuario(int id) {
-        try {
-            return UsuarioDAO.encontrarUsuario(id);
-        } catch(SQLException e) {
-            throw new IllegalStateException("Não foi possivel encontrar o usuario de id: " + id, e);
+        for (Usuario usuario : listaUsuarios) {
+            if (usuario.getId() == id) {
+                return usuario;
+            }
         }
+        return null;
+    }
+
+    public static void registrarUsuarioEmMemoria(Usuario usuario) {
+        if (usuario != null && !listaUsuarios.contains(usuario)) {
+            listaUsuarios.add(usuario);
+        }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 
     public static int getIdLogado() {
         return idLogado;
+    }
+
+    public static void setIdLogado(int idLogado) {
+        Usuario.idLogado = idLogado;
     }
 }
