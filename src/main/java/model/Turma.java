@@ -114,7 +114,7 @@ public class Turma {
         return turmasPorFaixa;
     }
 
-    public Turma geTurma(int idTurma) {
+    public Turma getTurma(int idTurma) {
         try {
             return TurmaDAO.encontrarTurma(idTurma);
         } catch(SQLException e) {
