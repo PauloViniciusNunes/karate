@@ -1,11 +1,14 @@
+import controller.InstrutorController;
+import controller.UsuarioController;
 import database.Conexao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import model.*;
-import model.enums.*;
-import view.*;
+import model.Usuario;
+import model.enums.CargoInstrutor;
+import model.enums.Faixa;
+import view.TelaLogin;
 
 public class Main {
     public static void main(String[] args) {
@@ -31,7 +34,13 @@ public class Main {
             e.printStackTrace();
         }
 
-        Usuario adm = Instrutor.criarInstrutor("Joao", "11111111111", "joaosouza", "1234", "joaovictor@gmail.com", "88 98147-9158", CargoInstrutor.COORDENADOR, Faixa.PRETA);
+        if (UsuarioController.obterUsuarioPorLogin("joaosouza") == null) {
+            Usuario adm = InstrutorController.criarInstrutor(
+                "Joao", "11111111111", "joaosouza", "1234",
+                "joaovictor@gmail.com", "88 98147-9158",
+                CargoInstrutor.COORDENADOR, Faixa.PRETA
+            );
+        }
 
         TelaLogin.iniciarLogin();
     }

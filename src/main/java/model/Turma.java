@@ -1,15 +1,10 @@
 package model;
 
-import model.enums.DiaSemana;
-import model.enums.Faixa;
-import java.util.List;
-
-import dao.AlunoDAO;
-import dao.TurmaDAO;
-
-import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
+import model.enums.DiaSemana;
+import model.enums.Faixa;
 
 public class Turma {
     private String nome;
@@ -24,16 +19,16 @@ public class Turma {
     private Instrutor responsavel;
 
     private ArrayList<Aluno> alunos = new ArrayList<>();
-
+    private static final List<Turma> listaTurmas = new ArrayList<>();
 
     public void alocarNaTurma(Aluno aluno) {
-        alunos.add(aluno);
-        aluno.setIdTurma(this.idTurma);
-        try {
-            AlunoDAO.atualizarAluno(aluno);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível alocar o aluno na turma", e);
+        if (aluno == null) {
+            return;
         }
+        if (!alunos.contains(aluno)) {
+            alunos.add(aluno);
+        }
+        aluno.setIdTurma(this.idTurma);
     }
 
     public List<Aluno> getAlunos() {
@@ -41,9 +36,9 @@ public class Turma {
     }
 
     public void verTurma() {
-        System.out.println("Tuma: " + nome + " ID da turma: " + idTurma + " Status: " + ativa);
-        System.out.println("Instrutor: " + responsavel.getNome());
-        System.out.println("Horario de aula: " + horaInicio + " as " + horaFim );
+        System.out.println("Turma: " + nome + " ID da turma: " + idTurma + " Status: " + ativa);
+        System.out.println("Instrutor: " + (responsavel != null ? responsavel.getNome() : "Não definido"));
+        System.out.println("Horario de aula: " + horaInicio + " as " + horaFim);
         System.out.println("Dias de aula: " + diasSemana);
         System.out.println("Faixas inicial: " + faixaInicial + " e final: " + faixaFinal);
     }
@@ -59,11 +54,20 @@ public class Turma {
         this.faixaInicial = faixaInicial;
         this.faixaFinal = faixaFinal;
         this.ativa = true;
-        try{
-            TurmaDAO.criarTurma(this);
-        } catch(SQLException e) {
-             throw new IllegalStateException("Não foi possivel criar a turma", e);
-        }
+    }
+
+    public Turma(int idTurma, int idInstrutor, Instrutor responsavel, String nome, List<DiaSemana> diasSemana,
+    LocalTime horaInicio, LocalTime horaFim, Faixa faixaInicial, Faixa faixaFinal, boolean ativa) {
+        this.idTurma = idTurma;
+        this.idInstrutor = idInstrutor;
+        this.responsavel = responsavel;
+        this.nome = nome;
+        this.diasSemana = diasSemana;
+        this.horaInicio = horaInicio;
+        this.horaFim = horaFim;
+        this.faixaInicial = faixaInicial;
+        this.faixaFinal = faixaFinal;
+        this.ativa = ativa;
     }
 
     public static Turma criarTurma(Instrutor responsavel, String nome, List<DiaSemana> diasSemana,
@@ -71,9 +75,11 @@ public class Turma {
         return new Turma(responsavel, nome, diasSemana, horaInicio, horaFim, faixaInicial, faixaFinal);
     }
 
-
     public static void editarTurma(Turma turma, String nome, List<DiaSemana> diasSemana,
     LocalTime horaInicio, LocalTime horaFim, Faixa faixaInicial, Faixa faixaFinal) {
+        if (turma == null) {
+            return;
+        }
         turma.nome = nome;
         turma.diasSemana = diasSemana;
         turma.horaInicio = horaInicio;
@@ -84,8 +90,15 @@ public class Turma {
     }
 
     public static Turma buscarTurmaPorFaixa(Faixa faixa) {
-        for(Turma turma : listarTurmas()) {
-            if(turma.faixaInicial == faixa) {
+        return buscarTurmaPorFaixa(faixa, listarTurmas());
+    }
+
+    public static Turma buscarTurmaPorFaixa(Faixa faixa, List<Turma> turmas) {
+        if (turmas == null) {
+            return null;
+        }
+        for (Turma turma : turmas) {
+            if (turma != null && turma.faixaInicial == faixa) {
                 return turma;
             }
         }
@@ -93,21 +106,26 @@ public class Turma {
     }
 
     public static void desativarTurma(Turma turma) {
-        turma.ativa = false;
-    }
-
-    public static List<Turma> listarTurmas() {
-        try {
-            return TurmaDAO.listarTurmas();
-        } catch(SQLException e) {
-             throw new IllegalStateException("Não foi possivel listar as turmas", e);
+        if (turma != null) {
+            turma.ativa = false;
         }
     }
 
+    public static List<Turma> listarTurmas() {
+        return new ArrayList<>(listaTurmas);
+    }
+
     public static List<Turma> listarTurmasPorFaixa(Faixa faixa) {
+        return listarTurmasPorFaixa(faixa, listarTurmas());
+    }
+
+    public static List<Turma> listarTurmasPorFaixa(Faixa faixa, List<Turma> turmas) {
         List<Turma> turmasPorFaixa = new ArrayList<>();
-        for(Turma turma : listarTurmas()) {
-            if(faixa == turma.faixaInicial) {
+        if (turmas == null) {
+            return turmasPorFaixa;
+        }
+        for (Turma turma : turmas) {
+            if (turma != null && faixa == turma.faixaInicial) {
                 turmasPorFaixa.add(turma);
             }
         }
@@ -115,10 +133,17 @@ public class Turma {
     }
 
     public Turma getTurma(int idTurma) {
-        try {
-            return TurmaDAO.encontrarTurma(idTurma);
-        } catch(SQLException e) {
-             throw new IllegalStateException("Não foi possivel encontrar a turma de id: " + idTurma, e);
+        for (Turma turma : listaTurmas) {
+            if (turma.getIdTurma() == idTurma) {
+                return turma;
+            }
+        }
+        return null;
+    }
+
+    public static void registrarTurmaEmMemoria(Turma turma) {
+        if (turma != null && !listaTurmas.contains(turma)) {
+            listaTurmas.add(turma);
         }
     }
 
@@ -149,6 +174,7 @@ public class Turma {
     public boolean getAtiva() {
         return ativa;
     }
+
     public int getIdTurma() {
         return idTurma;
     }
@@ -203,5 +229,4 @@ public class Turma {
             this.idInstrutor = responsavel.getId();
         }
     }
-
 }

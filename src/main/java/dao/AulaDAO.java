@@ -1,8 +1,6 @@
 package dao;
-import database.Conexao;
 
-import java.util.List;
-import java.util.ArrayList;
+import database.Conexao;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -10,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import model.Aula;
 import model.enums.StatusAula;
 import model.enums.TipoAula;
@@ -19,22 +20,22 @@ public class AulaDAO {
     public static void criarAula(Aula a) throws SQLException {
         String sql = "insert into aula (id_turma, data_aula, tipo, status) values(?, ?, ?, ?)";
 
-        try(
+        try (
             Connection conn = Conexao.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
             stmt.setInt(1, a.getIdTurma());
-            if(a.getData() != null) {
+            if (a.getData() != null) {
                 stmt.setDate(2, Date.valueOf(a.getData()));
             } else {
                 stmt.setNull(2, Types.DATE);
             }
-            if(a.getTipo() != null) {
+            if (a.getTipo() != null) {
                 stmt.setString(3, a.getTipo().name());
             } else {
                 stmt.setNull(3, Types.VARCHAR);
             }
-            if(a.getStatus() != null) {
+            if (a.getStatus() != null) {
                 stmt.setString(4, a.getStatus().name());
             } else {
                 stmt.setNull(4, Types.VARCHAR);
@@ -42,8 +43,8 @@ public class AulaDAO {
 
             stmt.executeUpdate();
 
-            try(ResultSet rs = stmt.getGeneratedKeys()) {
-                if(rs.next()) {
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
                     a.setId(rs.getInt(1));
                 }
             }
@@ -54,13 +55,13 @@ public class AulaDAO {
         String sql = "select id, id_turma, data_aula, tipo, status from aula order by data_aula, id";
         List<Aula> aulas = new ArrayList<>();
 
-        try(
+        try (
             Connection conn = Conexao.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery()
         ) {
-            while(rs.next()) {
-                aulas.add(montarAula(rs));
+            while (rs.next()) {
+                aulas.add(montarAula(conn, rs));
             }
         }
 
@@ -70,15 +71,15 @@ public class AulaDAO {
     public static Aula encontrarAula(int id) throws SQLException {
         String sql = "select id, id_turma, data_aula, tipo, status from aula where id = ?";
 
-        try(
+        try (
             Connection conn = Conexao.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             stmt.setInt(1, id);
 
-            try(ResultSet rs = stmt.executeQuery()) {
-                if(rs.next()) {
-                    return montarAula(rs);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return montarAula(conn, rs);
                 }
             }
         }
@@ -89,29 +90,28 @@ public class AulaDAO {
     public static void atualizarAula(Aula aula) throws SQLException {
         String sql = "update aula set id_turma = ?, data_aula = ?, tipo = ?, status = ? where id = ?";
 
-        try(
+        try (
             Connection conn = Conexao.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             stmt.setInt(1, aula.getIdTurma());
-            if(aula.getData() != null) {
+            if (aula.getData() != null) {
                 stmt.setDate(2, Date.valueOf(aula.getData()));
             } else {
                 stmt.setNull(2, Types.DATE);
             }
-            if(aula.getTipo() != null) {
+            if (aula.getTipo() != null) {
                 stmt.setString(3, aula.getTipo().name());
             } else {
                 stmt.setNull(3, Types.VARCHAR);
             }
-            if(aula.getStatus() != null) {
+            if (aula.getStatus() != null) {
                 stmt.setString(4, aula.getStatus().name());
             } else {
                 stmt.setNull(4, Types.VARCHAR);
             }
 
             stmt.setInt(5, aula.getId());
-
             stmt.executeUpdate();
         }
     }
@@ -120,82 +120,84 @@ public class AulaDAO {
         String sqlPresencas = "delete from aula_presenca where id_aula = ?";
         String sql = "DELETE from aula where id = ?";
 
-        try(
-            Connection conn = Conexao.getConnection();
-            PreparedStatement stmtPresencas = conn.prepareStatement(sqlPresencas);
-            PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
-            
-            stmtPresencas.setInt(1, id);
-            stmtPresencas.executeUpdate();
+        try (Connection conn = Conexao.getConnection()) {
+            conn.setAutoCommit(false);
+            try (
+                PreparedStatement stmtPresencas = conn.prepareStatement(sqlPresencas);
+                PreparedStatement stmt = conn.prepareStatement(sql)
+            ) {
+                stmtPresencas.setInt(1, id);
+                stmtPresencas.executeUpdate();
 
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-        }
-    }
+                stmt.setInt(1, id);
+                stmt.executeUpdate();
 
-    
-    public static void salvarPresenca(int idAula, String cpfAluno, boolean presente) throws SQLException {
-        String sqlUpdate = "update aula_presenca set presente = ? where id_aula = ? and cpf_aluno = ?";
-        String sqlInsert = "insert into aula_presenca (id_aula, cpf_aluno, presente) values (?, ?, ?)";
-
-        try(
-            Connection conn = Conexao.getConnection();
-            PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate);
-            PreparedStatement stmtInsert = conn.prepareStatement(sqlInsert)
-        ) {
-            stmtUpdate.setBoolean(1, presente);
-            stmtUpdate.setInt(2, idAula);
-            stmtUpdate.setString(3, cpfAluno);
-
-            if(stmtUpdate.executeUpdate() == 0) {
-                stmtInsert.setInt(1, idAula);
-                stmtInsert.setString(2, cpfAluno);
-                stmtInsert.setBoolean(3, presente);
-                stmtInsert.executeUpdate();
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
             }
         }
     }
 
-    private static Aula montarAula(ResultSet rs) throws SQLException {
-        Aula aula = new Aula(0, 0, null, null, null, null, null);
-        aula.setId(rs.getInt("id"));
-        aula.setIdTurma(rs.getInt("id_turma"));
+    public static void salvarPresenca(int idAula, String cpfAluno, boolean presente) throws SQLException {
+        String sqlUpdate = "update aula_presenca set presente = ? where id_aula = ? and cpf_aluno = ?";
+        String sqlInsert = "insert into aula_presenca (id_aula, cpf_aluno, presente) values (?, ?, ?)";
 
-        Date dataAula = rs.getDate("data_aula");
-        if(dataAula != null) {
-            aula.setData(dataAula.toLocalDate());
+        try (Connection conn = Conexao.getConnection()) {
+            conn.setAutoCommit(false);
+            try (
+                PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate);
+                PreparedStatement stmtInsert = conn.prepareStatement(sqlInsert)
+            ) {
+                stmtUpdate.setBoolean(1, presente);
+                stmtUpdate.setInt(2, idAula);
+                stmtUpdate.setString(3, cpfAluno);
+
+                if (stmtUpdate.executeUpdate() == 0) {
+                    stmtInsert.setInt(1, idAula);
+                    stmtInsert.setString(2, cpfAluno);
+                    stmtInsert.setBoolean(3, presente);
+                    stmtInsert.executeUpdate();
+                }
+
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
         }
+    }
 
-        String tipo = rs.getString("tipo");
-        if(tipo != null) {
-            aula.setTipo(TipoAula.valueOf(tipo.trim().toUpperCase()));
-        }
+    private static Aula montarAula(Connection conn, ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        int idTurma = rs.getInt("id_turma");
 
-        String status = rs.getString("status");
-        if(status != null) {
-            aula.setStatus(StatusAula.valueOf(status.trim().toUpperCase()));
-        }
+        Date dataAulaSql = rs.getDate("data_aula");
+        LocalDate dataAula = dataAulaSql != null ? dataAulaSql.toLocalDate() : null;
 
-        carregarPresencas(aula);
+        String tipoStr = rs.getString("tipo");
+        TipoAula tipo = tipoStr != null ? TipoAula.valueOf(tipoStr.trim().toUpperCase()) : null;
+
+        String statusStr = rs.getString("status");
+        StatusAula status = statusStr != null ? StatusAula.valueOf(statusStr.trim().toUpperCase()) : null;
+
+        Aula aula = new Aula(id, idTurma, dataAula, tipo, status, new ArrayList<>(), new ArrayList<>());
+        carregarPresencas(conn, aula);
 
         return aula;
     }
 
-    
-    private static void carregarPresencas(Aula aula) throws SQLException {
+    private static void carregarPresencas(Connection conn, Aula aula) throws SQLException {
         String sql = "select cpf_aluno, presente from aula_presenca where id_aula = ?";
 
-        try(
-            Connection conn = Conexao.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, aula.getId());
 
-            try(ResultSet rs = stmt.executeQuery()) {
-                while(rs.next()) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
                     String cpf = rs.getString("cpf_aluno");
-                    if(rs.getBoolean("presente")) {
+                    if (rs.getBoolean("presente")) {
                         aula.getCpfsPresentes().add(cpf);
                     } else {
                         aula.getCpfsFaltosos().add(cpf);
@@ -204,5 +206,4 @@ public class AulaDAO {
             }
         }
     }
-
 }

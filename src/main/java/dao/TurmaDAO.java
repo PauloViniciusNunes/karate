@@ -1,15 +1,15 @@
 package dao;
-import database.Conexao;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.time.LocalTime;
+import database.Conexao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import model.Instrutor;
 import model.Turma;
 import model.enums.CargoInstrutor;
@@ -21,7 +21,7 @@ public class TurmaDAO {
     public static void criarTurma(Turma t) throws SQLException {
         String sql = "insert into turma (id_instrutor, nome, dias_semanas, hora_inicio, hora_fim, faixa_inicial, faixa_final, ativa) values(?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try(
+        try (
             Connection conn = Conexao.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
@@ -40,8 +40,8 @@ public class TurmaDAO {
 
             stmt.executeUpdate();
 
-            try(ResultSet rs = stmt.getGeneratedKeys()) {
-                if(rs.next()) {
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
                     t.setIdTurma(rs.getInt(1));
                 }
             }
@@ -60,12 +60,12 @@ public class TurmaDAO {
                    + "order by t.nome";
         List<Turma> turmas = new ArrayList<>();
 
-        try(
+        try (
             Connection conn = Conexao.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery()
         ) {
-            while(rs.next()) {
+            while (rs.next()) {
                 turmas.add(montarTurma(rs));
             }
         }
@@ -84,14 +84,14 @@ public class TurmaDAO {
                    + "left join usuario u on i.id = u.id "
                    + "where t.id = ?";
 
-        try(
+        try (
             Connection conn = Conexao.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             stmt.setInt(1, id);
 
-            try(ResultSet rs = stmt.executeQuery()) {
-                if(rs.next()) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
                     return montarTurma(rs);
                 }
             }
@@ -103,7 +103,7 @@ public class TurmaDAO {
     public static void atualizarTurma(Turma turma) throws SQLException {
         String sql = "update turma set id_instrutor = ?, nome = ?, dias_semanas = ?, hora_inicio = ?, hora_fim = ?, faixa_inicial = ?, faixa_final = ?, ativa = ? where id = ?";
 
-        try(
+        try (
             Connection conn = Conexao.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
@@ -129,21 +129,20 @@ public class TurmaDAO {
     public static void deletarTurma(int id) throws SQLException {
         String sql = "DELETE from turma where id = ?";
 
-        try(
+        try (
             Connection conn = Conexao.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             stmt.setInt(1, id);
-
             stmt.executeUpdate();
         }
     }
 
     private static void setDiasSemana(PreparedStatement stmt, int index, List<DiaSemana> diasSemana) throws SQLException {
-        if(diasSemana != null && !diasSemana.isEmpty()) {
+        if (diasSemana != null && !diasSemana.isEmpty()) {
             List<String> nomes = new ArrayList<>();
-            for(DiaSemana dia : diasSemana) {
-                if(dia != null) {
+            for (DiaSemana dia : diasSemana) {
+                if (dia != null) {
                     nomes.add(dia.name());
                 }
             }
@@ -154,7 +153,7 @@ public class TurmaDAO {
     }
 
     private static void setLocalTime(PreparedStatement stmt, int index, LocalTime time) throws SQLException {
-        if(time != null) {
+        if (time != null) {
             stmt.setString(index, time.toString());
         } else {
             stmt.setNull(index, Types.VARCHAR);
@@ -162,7 +161,7 @@ public class TurmaDAO {
     }
 
     private static void setFaixa(PreparedStatement stmt, int index, Faixa faixa) throws SQLException {
-        if(faixa != null) {
+        if (faixa != null) {
             stmt.setString(index, faixa.name());
         } else {
             stmt.setNull(index, Types.VARCHAR);
@@ -171,33 +170,32 @@ public class TurmaDAO {
 
     private static Turma montarTurma(ResultSet rs) throws SQLException {
         Instrutor responsavel = null;
-        if(rs.getString("instrutor_nome") != null) {
-            responsavel = Instrutor.criarInstrutor("", "", "", "", "", "", null, null);
-            responsavel.setId(rs.getInt("id_instrutor"));
-            responsavel.setNome(rs.getString("instrutor_nome"));
-            responsavel.setCpf(rs.getString("instrutor_cpf"));
-            responsavel.setLogin(rs.getString("instrutor_login"));
-            responsavel.setSenha(rs.getString("instrutor_senha"));
-            responsavel.setEmail(rs.getString("instrutor_email"));
-            responsavel.setTelefone(rs.getString("instrutor_telefone"));
-            responsavel.setAtivo(rs.getBoolean("instrutor_ativo"));
+        if (rs.getString("instrutor_nome") != null) {
+            String cargoStr = rs.getString("instrutor_cargo");
+            CargoInstrutor cargo = cargoStr != null ? CargoInstrutor.valueOf(cargoStr.trim().toUpperCase()) : null;
+            String faixaInstrutorStr = rs.getString("instrutor_faixa");
+            Faixa faixaInstrutor = faixaInstrutorStr != null ? Faixa.valueOf(faixaInstrutorStr.trim().toUpperCase()) : null;
 
-            String cargo = rs.getString("instrutor_cargo");
-            if(cargo != null) {
-                responsavel.setCargo(CargoInstrutor.valueOf(cargo.trim().toUpperCase()));
-            }
-            String faixaInstrutor = rs.getString("instrutor_faixa");
-            if(faixaInstrutor != null) {
-                responsavel.setFaixa(Faixa.valueOf(faixaInstrutor.trim().toUpperCase()));
-            }
+            responsavel = new Instrutor(
+                rs.getInt("id_instrutor"),
+                rs.getString("instrutor_nome"),
+                rs.getString("instrutor_cpf"),
+                rs.getString("instrutor_login"),
+                rs.getString("instrutor_senha"),
+                rs.getString("instrutor_email"),
+                rs.getString("instrutor_telefone"),
+                rs.getBoolean("instrutor_ativo"),
+                cargo,
+                faixaInstrutor
+            );
         }
 
         List<DiaSemana> dias = new ArrayList<>();
         String diasStr = rs.getString("dias_semanas");
-        if(diasStr != null && !diasStr.isBlank()) {
+        if (diasStr != null && !diasStr.isBlank()) {
             String limpo = diasStr.replace("[", "").replace("]", "");
-            for(String parte : limpo.split(",")) {
-                if(!parte.isBlank()) {
+            for (String parte : limpo.split(",")) {
+                if (!parte.isBlank()) {
                     dias.add(DiaSemana.valueOf(parte.trim().toUpperCase()));
                 }
             }
@@ -205,34 +203,39 @@ public class TurmaDAO {
 
         LocalTime horaInicio = null;
         String horaInicioStr = rs.getString("hora_inicio");
-        if(horaInicioStr != null && !horaInicioStr.isBlank()) {
+        if (horaInicioStr != null && !horaInicioStr.isBlank()) {
             horaInicio = LocalTime.parse(horaInicioStr.trim());
         }
 
         LocalTime horaFim = null;
         String horaFimStr = rs.getString("hora_fim");
-        if(horaFimStr != null && !horaFimStr.isBlank()) {
+        if (horaFimStr != null && !horaFimStr.isBlank()) {
             horaFim = LocalTime.parse(horaFimStr.trim());
         }
 
         Faixa faixaInicial = null;
         String faixaInicialStr = rs.getString("faixa_inicial");
-        if(faixaInicialStr != null) {
+        if (faixaInicialStr != null) {
             faixaInicial = Faixa.valueOf(faixaInicialStr.trim().toUpperCase());
         }
 
         Faixa faixaFinal = null;
         String faixaFinalStr = rs.getString("faixa_final");
-        if(faixaFinalStr != null) {
+        if (faixaFinalStr != null) {
             faixaFinal = Faixa.valueOf(faixaFinalStr.trim().toUpperCase());
         }
 
-        Turma turma = Turma.criarTurma(responsavel, rs.getString("nome"), dias, horaInicio, horaFim, faixaInicial, faixaFinal);
-        turma.setIdTurma(rs.getInt("id"));
-        turma.setIdInstrutor(rs.getInt("id_instrutor"));
-        turma.setAtiva(rs.getBoolean("ativa"));
-
-        return turma;
+        return new Turma(
+            rs.getInt("id"),
+            rs.getInt("id_instrutor"),
+            responsavel,
+            rs.getString("nome"),
+            dias,
+            horaInicio,
+            horaFim,
+            faixaInicial,
+            faixaFinal,
+            rs.getBoolean("ativa")
+        );
     }
-
 }

@@ -1,12 +1,9 @@
 package model;
 
-import model.enums.Faixa;
-import model.enums.CargoInstrutor;
-
 import java.util.ArrayList;
 import java.util.List;
-import dao.InstrutorDAO;
-import java.sql.SQLException;
+import model.enums.CargoInstrutor;
+import model.enums.Faixa;
 
 public final class Instrutor extends Usuario {
     private CargoInstrutor cargo;
@@ -16,11 +13,12 @@ public final class Instrutor extends Usuario {
         super(nome, cpf, login, senha, email, telefone);
         this.cargo = cargo;
         this.faixa = faixa;
-        try {
-            InstrutorDAO.criarInstrutor(this);
-        } catch(SQLException e) {
-            throw new IllegalStateException("Não foi possivel criar o instrutor", e);
-        }
+    }
+
+    public Instrutor(int id, String nome, String cpf, String login, String senha, String email, String telefone, boolean ativo, CargoInstrutor cargo, Faixa faixa) {
+        super(id, nome, cpf, login, senha, email, telefone, ativo);
+        this.cargo = cargo;
+        this.faixa = faixa;
     }
 
     public void verInstrutor() {
@@ -30,40 +28,52 @@ public final class Instrutor extends Usuario {
     }
 
     public static Instrutor criarInstrutor(String nome, String cpf, String login, String senha, String email, String telefone, CargoInstrutor cargo, Faixa faixa) {
-        // Validações de dados
-
         return new Instrutor(nome, cpf, login, senha, email, telefone, cargo, faixa);
     }
 
     public static void editarInstrutor(Instrutor instrutor, String nome, String cpf, String login, String senha, String email, String telefone, boolean ativo, CargoInstrutor cargo, Faixa faixa) {
+        if (instrutor == null) {
+            return;
+        }
         instrutor.cargo = cargo;
         instrutor.faixa = faixa;
         editarUsuario(instrutor, nome, cpf, login, senha, email, telefone, ativo);
     }
 
     public static List<Instrutor> listarInstrutores() {
-        try {
-            return InstrutorDAO.listarInstrutores();
-        } catch(SQLException e) {
-            throw new IllegalStateException("Não foi possivel listar os instrutores", e);
+        List<Instrutor> instrutores = new ArrayList<>();
+        for (Usuario usuario : Usuario.listarUsuarios()) {
+            if (usuario instanceof Instrutor instrutor) {
+                instrutores.add(instrutor);
+            }
         }
+        return instrutores;
     }
 
     public static List<Instrutor> listarInstrutoresPorCargo(CargoInstrutor cargo) {
-        List<Instrutor> instrutoresCargo = new ArrayList<>();
+        return listarInstrutoresPorCargo(cargo, listarInstrutores());
+    }
 
-        for(Instrutor instrutor : listarInstrutores()) {
-            if(instrutor.cargo == cargo) instrutoresCargo.add(instrutor);
+    public static List<Instrutor> listarInstrutoresPorCargo(CargoInstrutor cargo, List<Instrutor> instrutores) {
+        List<Instrutor> instrutoresCargo = new ArrayList<>();
+        if (instrutores == null) {
+            return instrutoresCargo;
+        }
+        for (Instrutor instrutor : instrutores) {
+            if (instrutor != null && instrutor.cargo == cargo) {
+                instrutoresCargo.add(instrutor);
+            }
         }
         return instrutoresCargo;
     }
 
     public static Instrutor getInstrutor(int id) {
-        try {
-            return InstrutorDAO.encontrarInstrutor(id);
-        } catch(SQLException e) {
-            throw new IllegalStateException("Não foi possivel encontrar o instrutor de id: " + id, e);
+        for (Instrutor instrutor : listarInstrutores()) {
+            if (instrutor.getId() == id) {
+                return instrutor;
+            }
         }
+        return null;
     }
 
     public CargoInstrutor getCargo() {
@@ -81,5 +91,4 @@ public final class Instrutor extends Usuario {
     public void setFaixa(Faixa faixa) {
         this.faixa = faixa;
     }
-
 }

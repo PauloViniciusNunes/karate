@@ -1,7 +1,11 @@
 package view;
-import model.*;
 
-public class TelaLogin implements Leitor{
+import controller.UsuarioController;
+import model.Aluno;
+import model.Instrutor;
+import model.Usuario;
+
+public class TelaLogin implements Leitor {
     public static void iniciarLogin() {
         String login, senha;
         System.out.println("==================SISTEMA DE AGENDAMENTO DE AULAS DE KARATÊ==================");
@@ -10,16 +14,16 @@ public class TelaLogin implements Leitor{
         System.out.println("Senha: ");
         senha = sc.nextLine();
 
-        if(Usuario.autenticar(login, senha) == false) {
+        if (!UsuarioController.autenticar(login, senha)) {
             System.err.println("Usuario nn registrado ou inativo");
             return;
         }
 
-        Usuario usuarioLogado = Usuario.getUsuario(Usuario.getIdLogado());
+        Usuario usuarioLogado = UsuarioController.getUsuarioLogado();
 
-        if(usuarioLogado instanceof Aluno aluno) {
+        if (usuarioLogado instanceof Aluno aluno) {
             TelaAluno.iniciarMenu(aluno);
-        } else if(usuarioLogado instanceof Instrutor instrutor) {
+        } else if (usuarioLogado instanceof Instrutor instrutor) {
             TelaInstrutor.iniciarMenu(instrutor);
         } else {
             System.err.println("Este usuario não possui função real cadastrada no sistema");

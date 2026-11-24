@@ -1,20 +1,23 @@
 package view;
-import model.*;
-import model.enums.*;
-import java.util.Scanner;
 
-public class TelaInstrutor implements Leitor{
+import controller.InstrutorController;
+import model.Instrutor;
+import model.enums.CargoInstrutor;
+import model.enums.Faixa;
+
+public class TelaInstrutor implements Leitor {
     public static void iniciarMenu(Instrutor instrutorLogado) {
         System.out.println("Bem-vindo, " + instrutorLogado.getNome() + "! (Instrutor)");
         int op;
         do {
             menu(instrutorLogado);
             op = sc.nextInt();
-            if(op < 0) return;
-            if(instrutorLogado.getCargo() == CargoInstrutor.AUXILIAR && op > 7) return;
-            if(instrutorLogado.getCargo() != CargoInstrutor.SENSEI && op > 10) return;
+            sc.nextLine();
+            if (op < 0) return;
+            if (instrutorLogado.getCargo() == CargoInstrutor.AUXILIAR && op > 7) return;
+            if (instrutorLogado.getCargo() != CargoInstrutor.SENSEI && op > 10) return;
 
-            switch(op) {
+            switch (op) {
                 case 0:
                     break;
                 case 1:
@@ -46,11 +49,9 @@ public class TelaInstrutor implements Leitor{
                     break;
                 default:
                     break;
-
             }
 
-        } while(op != 0);
-
+        } while (op != 0);
     }
 
     private static void menu(Instrutor instrutorLogado) {
@@ -63,15 +64,16 @@ public class TelaInstrutor implements Leitor{
         System.out.println("6 - Ver aulas");
         System.out.println("7 - Ver alunos");
 
-        if(instrutorLogado.getCargo() == CargoInstrutor.AUXILIAR) return;
+        if (instrutorLogado.getCargo() == CargoInstrutor.AUXILIAR) return;
 
         System.out.println("8 - Gerenciar turmas");
         System.out.println("9 - Gerenciar aulas");
         System.out.println("10 - Gerenciar alunos");
-        if(instrutorLogado.getCargo() == CargoInstrutor.SENSEI) return;
+        if (instrutorLogado.getCargo() == CargoInstrutor.SENSEI) return;
 
         System.out.println("11 - Gerenciar instrutores");
     }
+
     private static void menuGerenciarInstrutor(Instrutor instrutorLogado) {
         System.out.println("0 - Sair");
         System.out.println("1 - Cadastrar Instrutor");
@@ -87,7 +89,8 @@ public class TelaInstrutor implements Leitor{
         do {
             menuGerenciarInstrutor(instrutorLogado);
             op = sc.nextInt();
-            if(op == 1) {
+            sc.nextLine();
+            if (op == 1) {
                 System.out.println("Nome:");
                 nome = sc.nextLine();
                 System.out.println("cpf:");
@@ -108,18 +111,19 @@ public class TelaInstrutor implements Leitor{
                 cargoInstrutor = CargoInstrutor.getCargoByName(cargo);
                 faixaInstrutor = Faixa.getFaixaByName(faixa);
 
-                if(cargoInstrutor == null || faixaInstrutor == null) {
+                if (cargoInstrutor == null || faixaInstrutor == null) {
                     System.out.println("Cargo ou faixa inválidos!");
                     return;
                 }
 
-                Instrutor.criarInstrutor(nome, cpf, login, senha, email, telefone, cargoInstrutor, faixaInstrutor);
+                InstrutorController.criarInstrutor(nome, cpf, login, senha, email, telefone, cargoInstrutor, faixaInstrutor);
 
-            } else if(op == 2) {
+            } else if (op == 2) {
                 System.out.println("Id do instrutor:");
                 int id = sc.nextInt();
-                Instrutor instrutor = Instrutor.getInstrutor(id);
-                if(instrutor == null) {
+                sc.nextLine();
+                Instrutor instrutor = InstrutorController.obterInstrutor(id);
+                if (instrutor == null) {
                     System.out.println("Instrutor não encontrado!");
                     return;
                 }
@@ -143,26 +147,25 @@ public class TelaInstrutor implements Leitor{
                 cargoInstrutor = CargoInstrutor.getCargoByName(cargo);
                 faixaInstrutor = Faixa.getFaixaByName(faixa);
 
-                if(cargoInstrutor == null || faixaInstrutor == null) {
+                if (cargoInstrutor == null || faixaInstrutor == null) {
                     System.out.println("Cargo ou faixa inválidos!");
                     return;
                 }
 
-                Instrutor.editarInstrutor(instrutor, nome, cpf, login, senha, email, telefone, true, cargoInstrutor, faixaInstrutor);
+                InstrutorController.editarInstrutor(instrutor, nome, cpf, login, senha, email, telefone, true, cargoInstrutor, faixaInstrutor);
             } else if (op == 3) {
                 System.out.println("Id do instrutor:");
                 int id = sc.nextInt();
-                Instrutor instrutor = Instrutor.getInstrutor(id);
-                if(instrutor == null) {
+                sc.nextLine();
+                Instrutor instrutor = InstrutorController.obterInstrutor(id);
+                if (instrutor == null) {
                     System.out.println("Instrutor não encontrado!");
                     return;
                 }
-                Instrutor.desativarUsuario(instrutor);
-            } else {
+                InstrutorController.desativarInstrutor(instrutor);
+            } else if (op != 0) {
                 System.out.println("Opção inválida!");
             }
-        } while(op != 0);
-
-
+        } while (op != 0);
     }
 }
