@@ -21,16 +21,6 @@ public class Turma {
     private ArrayList<Aluno> alunos = new ArrayList<>();
     private static final List<Turma> listaTurmas = new ArrayList<>();
 
-    public void alocarNaTurma(Aluno aluno) {
-        if (aluno == null) {
-            return;
-        }
-        if (!alunos.contains(aluno)) {
-            alunos.add(aluno);
-        }
-        aluno.setIdTurma(this.idTurma);
-    }
-
     public List<Aluno> getAlunos() {
         return alunos;
     }
@@ -76,7 +66,7 @@ public class Turma {
     }
 
     public static void editarTurma(Turma turma, String nome, List<DiaSemana> diasSemana,
-    LocalTime horaInicio, LocalTime horaFim, Faixa faixaInicial, Faixa faixaFinal) {
+    LocalTime horaInicio, LocalTime horaFim, Faixa faixaInicial, Faixa faixaFinal, boolean ativa) {
         if (turma == null) {
             return;
         }
@@ -86,7 +76,7 @@ public class Turma {
         turma.horaFim = horaFim;
         turma.faixaInicial = faixaInicial;
         turma.faixaFinal = faixaFinal;
-        turma.ativa = true;
+        turma.ativa = ativa;
     }
 
     public static Turma buscarTurmaPorFaixa(Faixa faixa) {

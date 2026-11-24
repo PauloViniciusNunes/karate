@@ -64,7 +64,7 @@ public class AlunoController {
         if (aluno == null) {
             throw new IllegalArgumentException("Aluno não pode ser nulo.");
         }
-        Aluno.editarAluno(aluno, nome, cpf, login, senha, email, telefone, ativo, dataNascimento, faixaAtual);
+        Aluno.editarAluno(aluno, nome, cpf, login, senha, email, telefone, ativo, dataNascimento);
         try {
             AlunoDAO.atualizarAluno(aluno);
         } catch (SQLException e) {
@@ -93,6 +93,18 @@ public class AlunoController {
             UsuarioDAO.atualizarUsuario(aluno);
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível desativar o aluno.", e);
+        }
+    }
+
+    public static void alocarAlunoNaTurma(Turma turma, Aluno aluno) {
+        if (turma == null || aluno == null) {
+            throw new IllegalArgumentException("Turma e aluno não podem ser nulos.");
+        }
+        aluno.alocarNaTurma(turma);
+        try {
+            AlunoDAO.atualizarAluno(aluno);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Não foi possível alocar o aluno na turma.", e);
         }
     }
 }

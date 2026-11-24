@@ -59,9 +59,12 @@ public class TelaAluno implements Leitor {
     }
 
     private static void listarAulas(Aluno alunoLogado) {
-        List<Aula> aulas = AulaController.listarAulasPorAluno(alunoLogado);
-        for (Aula aula : aulas) {
-            aula.verAula();
-        }
+    List<Aula> aulas = AulaController.listarAulasPorAluno(alunoLogado);
+
+    System.out.println("Quantidade de aulas: " + aulas.size());
+
+    for (Aula aula : aulas) {
+        aula.verAula();
     }
+}
 }

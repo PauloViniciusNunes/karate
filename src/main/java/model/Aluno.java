@@ -18,6 +18,16 @@ public class Aluno extends Usuario {
         System.out.println("Faixa atual: " + faixaAtual);
     }
 
+    public void alocarNaTurma(Turma turma) {
+        if (turma == null) {
+            return;
+        }
+        if (!turma.getAlunos().contains(this)) {
+            turma.getAlunos().add(this);
+        }
+        this.idTurma = turma.getIdTurma();
+    }
+
     public void graduarAluno(Faixa faixa) {
         faixaAtual = faixa;
     }
@@ -44,13 +54,12 @@ public class Aluno extends Usuario {
     }
 
     public static void editarAluno(Aluno aluno, String nome, String cpf, String login, String senha, String email,
-        String telefone, boolean ativo, Date dataNascimento, Faixa faixaAtual) {
+        String telefone, boolean ativo, Date dataNascimento) {
         if (aluno == null) {
             return;
         }
         editarUsuario(aluno, nome, cpf, login, senha, email, telefone, ativo);
         aluno.dataNascimento = dataNascimento;
-        aluno.faixaAtual = faixaAtual;
     }
 
     public static List<Aluno> listarAlunos() {

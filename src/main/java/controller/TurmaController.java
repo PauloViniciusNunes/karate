@@ -1,11 +1,9 @@
 package controller;
 
-import dao.AlunoDAO;
 import dao.TurmaDAO;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
-import model.Aluno;
 import model.Instrutor;
 import model.Turma;
 import model.enums.DiaSemana;
@@ -49,11 +47,11 @@ public class TurmaController {
     }
 
     public static void editarTurma(Turma turma, String nome, List<DiaSemana> diasSemana,
-            LocalTime horaInicio, LocalTime horaFim, Faixa faixaInicial, Faixa faixaFinal) {
+            LocalTime horaInicio, LocalTime horaFim, Faixa faixaInicial, Faixa faixaFinal, boolean ativa) {
         if (turma == null) {
             throw new IllegalArgumentException("Turma não pode ser nula.");
         }
-        Turma.editarTurma(turma, nome, diasSemana, horaInicio, horaFim, faixaInicial, faixaFinal);
+        Turma.editarTurma(turma, nome, diasSemana, horaInicio, horaFim, faixaInicial, faixaFinal, ativa);
         try {
             TurmaDAO.atualizarTurma(turma);
         } catch (SQLException e) {
@@ -73,15 +71,4 @@ public class TurmaController {
         }
     }
 
-    public static void alocarAlunoNaTurma(Turma turma, Aluno aluno) {
-        if (turma == null || aluno == null) {
-            throw new IllegalArgumentException("Turma e aluno não podem ser nulos.");
-        }
-        turma.alocarNaTurma(aluno);
-        try {
-            AlunoDAO.atualizarAluno(aluno);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível alocar o aluno na turma.", e);
-        }
-    }
 }
