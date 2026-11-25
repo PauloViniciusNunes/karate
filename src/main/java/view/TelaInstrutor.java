@@ -4,6 +4,7 @@ import controller.InstrutorController;
 import model.Instrutor;
 import model.enums.CargoInstrutor;
 import model.enums.Faixa;
+import java.util.concurrent.TimeUnit;
 
 public class TelaInstrutor implements Leitor {
     public static void iniciarMenu(Instrutor instrutorLogado) {
@@ -11,15 +12,18 @@ public class TelaInstrutor implements Leitor {
         int op;
         do {
             menu(instrutorLogado);
+            System.out.print("Opção: ");
             op = sc.nextInt();
             sc.nextLine();
             if (op < 0) return;
             if (instrutorLogado.getCargo() == CargoInstrutor.AUXILIAR && op > 7) return;
-            if (instrutorLogado.getCargo() != CargoInstrutor.SENSEI && op > 10) return;
+            if (instrutorLogado.getCargo() == CargoInstrutor.SENSEI && op > 10) return;
 
             switch (op) {
                 case 0:
-                    break;
+                    sc.close();
+                    return;
+                    
                 case 1:
                     instrutorLogado.verInstrutor();
                     break;
@@ -51,10 +55,18 @@ public class TelaInstrutor implements Leitor {
                     break;
             }
 
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+
         } while (op != 0);
     }
 
     private static void menu(Instrutor instrutorLogado) {
+        System.out.println("\n===============================================================");
         System.out.println("0 - Sair");
         System.out.println("1 - Ver dados");
         System.out.println("2 - Relatorio de frequencias");
@@ -72,13 +84,16 @@ public class TelaInstrutor implements Leitor {
         if (instrutorLogado.getCargo() == CargoInstrutor.SENSEI) return;
 
         System.out.println("11 - Gerenciar instrutores");
+        System.out.println("12 - Ver Instrutores");
     }
 
     private static void menuGerenciarInstrutor(Instrutor instrutorLogado) {
+        System.out.println("\n===============================================================");
         System.out.println("0 - Sair");
         System.out.println("1 - Cadastrar Instrutor");
         System.out.println("2 - Editar instrutor");
         System.out.println("3 - Desativar instrutor");
+        System.out.print("Opção: ");
     }
 
     private static void gerenciarInstrutores(Instrutor instrutorLogado) {
@@ -91,21 +106,21 @@ public class TelaInstrutor implements Leitor {
             op = sc.nextInt();
             sc.nextLine();
             if (op == 1) {
-                System.out.println("Nome:");
+                System.out.print("Nome:");
                 nome = sc.nextLine();
-                System.out.println("cpf:");
+                System.out.print("cpf:");
                 cpf = sc.nextLine();
-                System.out.println("login:");
+                System.out.print("login:");
                 login = sc.nextLine();
-                System.out.println("senha:");
+                System.out.print("senha:");
                 senha = sc.nextLine();
-                System.out.println("email:");
+                System.out.print("email:");
                 email = sc.nextLine();
-                System.out.println("telefone:");
+                System.out.print("telefone:");
                 telefone = sc.nextLine();
-                System.out.println("Cargo:");
+                System.out.print("Cargo:");
                 cargo = sc.nextLine();
-                System.out.println("Faixa:");
+                System.out.print("Faixa:");
                 faixa = sc.nextLine();
 
                 cargoInstrutor = CargoInstrutor.getCargoByName(cargo);
@@ -119,7 +134,7 @@ public class TelaInstrutor implements Leitor {
                 InstrutorController.criarInstrutor(nome, cpf, login, senha, email, telefone, cargoInstrutor, faixaInstrutor);
 
             } else if (op == 2) {
-                System.out.println("Id do instrutor:");
+                System.out.print("Id do instrutor:");
                 int id = sc.nextInt();
                 sc.nextLine();
                 Instrutor instrutor = InstrutorController.obterInstrutor(id);
@@ -127,21 +142,21 @@ public class TelaInstrutor implements Leitor {
                     System.out.println("Instrutor não encontrado!");
                     return;
                 }
-                System.out.println("Nome:");
+                System.out.print("Nome:");
                 nome = sc.nextLine();
-                System.out.println("cpf:");
+                System.out.print("cpf:");
                 cpf = sc.nextLine();
-                System.out.println("login:");
+                System.out.print("login:");
                 login = sc.nextLine();
-                System.out.println("senha:");
+                System.out.print("senha:");
                 senha = sc.nextLine();
-                System.out.println("email:");
+                System.out.print("email:");
                 email = sc.nextLine();
-                System.out.println("telefone:");
+                System.out.print("telefone:");
                 telefone = sc.nextLine();
-                System.out.println("Cargo:");
+                System.out.print("Cargo:");
                 cargo = sc.nextLine();
-                System.out.println("Faixa:");
+                System.out.print("Faixa:");
                 faixa = sc.nextLine();
 
                 cargoInstrutor = CargoInstrutor.getCargoByName(cargo);

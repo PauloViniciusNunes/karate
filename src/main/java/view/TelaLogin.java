@@ -11,7 +11,7 @@ public class TelaLogin implements Leitor {
         System.out.println("==================SISTEMA DE AGENDAMENTO DE AULAS DE KARATÊ==================");
         System.out.print("Login: ");
         login = sc.nextLine();
-        System.out.println("Senha: ");
+        System.out.print("Senha: ");
         senha = sc.nextLine();
 
         if (!UsuarioController.autenticar(login, senha)) {

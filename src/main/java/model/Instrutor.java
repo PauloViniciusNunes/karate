@@ -23,8 +23,8 @@ public final class Instrutor extends Usuario {
 
     public void verInstrutor() {
         verUsuario();
-        System.out.println(cargo);
-        System.out.println(faixa);
+        System.out.println("Cargo: " + cargo);
+        System.out.println("Faixa: " + faixa);
     }
 
     public static Instrutor criarInstrutor(String nome, String cpf, String login, String senha, String email, String telefone, CargoInstrutor cargo, Faixa faixa) {
