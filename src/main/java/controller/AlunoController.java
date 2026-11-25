@@ -17,26 +17,26 @@ public class AlunoController {
         Aluno aluno = Aluno.criarAluno(nome, cpf, login, senha, email, telefone, dataNascimento, idTurma);
         try {
             AlunoDAO.criarAluno(aluno);
-            return aluno;
+            UsuarioController.recarregarUsuarios();
+            TurmaController.recarregarTurmas();
+            Aluno recarregado = obterAluno(aluno.getId());
+            return recarregado != null ? recarregado : aluno;
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível criar o aluno.", e);
         }
     }
 
     public static Aluno obterAluno(int id) {
-        try {
-            return AlunoDAO.encontrarAluno(id);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível encontrar o aluno de id: " + id, e);
+        for (Aluno aluno : Aluno.listarAlunos()) {
+            if (aluno.getId() == id) {
+                return aluno;
+            }
         }
+        return null;
     }
 
     public static List<Aluno> listarAlunos() {
-        try {
-            return AlunoDAO.listarAlunos();
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível listar os alunos.", e);
-        }
+        return Aluno.listarAlunos();
     }
 
     public static List<Aluno> buscarAlunosPorNome(String nome) {
@@ -65,8 +65,13 @@ public class AlunoController {
             throw new IllegalArgumentException("Aluno não pode ser nulo.");
         }
         Aluno.editarAluno(aluno, nome, cpf, login, senha, email, telefone, ativo, dataNascimento);
+        if (faixaAtual != null) {
+            aluno.setFaixaAtual(faixaAtual);
+        }
         try {
             AlunoDAO.atualizarAluno(aluno);
+            UsuarioController.recarregarUsuarios();
+            TurmaController.recarregarTurmas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível atualizar o aluno.", e);
         }
@@ -79,6 +84,8 @@ public class AlunoController {
         aluno.graduarAluno(novaFaixa);
         try {
             AlunoDAO.atualizarAluno(aluno);
+            UsuarioController.recarregarUsuarios();
+            TurmaController.recarregarTurmas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível graduar o aluno.", e);
         }
@@ -91,6 +98,8 @@ public class AlunoController {
         Usuario.desativarUsuario(aluno);
         try {
             UsuarioDAO.atualizarUsuario(aluno);
+            UsuarioController.recarregarUsuarios();
+            TurmaController.recarregarTurmas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível desativar o aluno.", e);
         }
@@ -103,6 +112,8 @@ public class AlunoController {
         aluno.alocarNaTurma(turma);
         try {
             AlunoDAO.atualizarAluno(aluno);
+            UsuarioController.recarregarUsuarios();
+            TurmaController.recarregarTurmas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível alocar o aluno na turma.", e);
         }

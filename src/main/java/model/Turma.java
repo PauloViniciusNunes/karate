@@ -137,6 +137,10 @@ public class Turma {
         }
     }
 
+    public static void limparTurmasEmMemoria() {
+        listaTurmas.clear();
+    }
+
     public String getNome() {
         return nome;
     }

@@ -55,11 +55,12 @@ create table aula (
 
 -- Presenças
 create table presenca (
-    id_aula int unique not null,
-    id_aluno int,
+    id_aula int not null,
+    id_aluno int not null,
     presente boolean not null,
 
     primary key(id_aula, id_aluno),
     foreign key(id_aula) references aula(id) on delete cascade on update cascade,
     foreign key(id_aluno) references aluno(id) on delete cascade on update cascade
 );
+

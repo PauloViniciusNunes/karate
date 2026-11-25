@@ -90,6 +90,10 @@ public class Aula {
         }
     }
 
+    public static void limparAulasEmMemoria() {
+        listaDeAulas.clear();
+    }
+
     public static List<Aula> listarAulasPorPeriodo(LocalDate inicio, LocalDate fim) {
         return listarAulasPorPeriodo(inicio, fim, listarAulas());
     }

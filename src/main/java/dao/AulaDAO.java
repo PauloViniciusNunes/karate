@@ -117,7 +117,7 @@ public class AulaDAO {
     }
 
     public static void deletarAula(int id) throws SQLException {
-        String sqlPresencas = "delete from aula_presenca where id_aula = ?";
+        String sqlPresencas = "delete from presenca where id_aula = ?";
         String sql = "DELETE from aula where id = ?";
 
         try (Connection conn = Conexao.getConnection()) {
@@ -141,22 +141,37 @@ public class AulaDAO {
     }
 
     public static void salvarPresenca(int idAula, String cpfAluno, boolean presente) throws SQLException {
-        String sqlUpdate = "update aula_presenca set presente = ? where id_aula = ? and cpf_aluno = ?";
-        String sqlInsert = "insert into aula_presenca (id_aula, cpf_aluno, presente) values (?, ?, ?)";
+        if (cpfAluno == null || cpfAluno.isBlank()) {
+            throw new SQLException("CPF do aluno inválido para registrar presença.");
+        }
+
+        String sqlBuscarAluno = "select a.id from aluno a join usuario u on a.id = u.id where u.cpf = ?";
+        String sqlUpdate = "update presenca set presente = ? where id_aula = ? and id_aluno = ?";
+        String sqlInsert = "insert into presenca (id_aula, id_aluno, presente) values (?, ?, ?)";
 
         try (Connection conn = Conexao.getConnection()) {
             conn.setAutoCommit(false);
             try (
+                PreparedStatement stmtBuscar = conn.prepareStatement(sqlBuscarAluno);
                 PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate);
                 PreparedStatement stmtInsert = conn.prepareStatement(sqlInsert)
             ) {
+                stmtBuscar.setString(1, cpfAluno);
+                int idAluno;
+                try (ResultSet rs = stmtBuscar.executeQuery()) {
+                    if (!rs.next()) {
+                        throw new SQLException("Aluno não encontrado para o CPF: " + cpfAluno);
+                    }
+                    idAluno = rs.getInt("id");
+                }
+
                 stmtUpdate.setBoolean(1, presente);
                 stmtUpdate.setInt(2, idAula);
-                stmtUpdate.setString(3, cpfAluno);
+                stmtUpdate.setInt(3, idAluno);
 
                 if (stmtUpdate.executeUpdate() == 0) {
                     stmtInsert.setInt(1, idAula);
-                    stmtInsert.setString(2, cpfAluno);
+                    stmtInsert.setInt(2, idAluno);
                     stmtInsert.setBoolean(3, presente);
                     stmtInsert.executeUpdate();
                 }
@@ -189,14 +204,18 @@ public class AulaDAO {
     }
 
     private static void carregarPresencas(Connection conn, Aula aula) throws SQLException {
-        String sql = "select cpf_aluno, presente from aula_presenca where id_aula = ?";
+        String sql = "select u.cpf, p.presente "
+                   + "from presenca p "
+                   + "join aluno a on p.id_aluno = a.id "
+                   + "join usuario u on a.id = u.id "
+                   + "where p.id_aula = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, aula.getId());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    String cpf = rs.getString("cpf_aluno");
+                    String cpf = rs.getString("cpf");
                     if (rs.getBoolean("presente")) {
                         aula.getCpfsPresentes().add(cpf);
                     } else {

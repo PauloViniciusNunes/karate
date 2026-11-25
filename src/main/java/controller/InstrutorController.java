@@ -15,26 +15,21 @@ public class InstrutorController {
         Instrutor instrutor = Instrutor.criarInstrutor(nome, cpf, login, senha, email, telefone, cargo, faixa);
         try {
             InstrutorDAO.criarInstrutor(instrutor);
-            return instrutor;
+            UsuarioController.recarregarUsuarios();
+            TurmaController.recarregarTurmas();
+            Instrutor recarregado = obterInstrutor(instrutor.getId());
+            return recarregado != null ? recarregado : instrutor;
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível criar o instrutor.", e);
         }
     }
 
     public static Instrutor obterInstrutor(int id) {
-        try {
-            return InstrutorDAO.encontrarInstrutor(id);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível encontrar o instrutor de id: " + id, e);
-        }
+        return Instrutor.getInstrutor(id);
     }
 
     public static List<Instrutor> listarInstrutores() {
-        try {
-            return InstrutorDAO.listarInstrutores();
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível listar os instrutores.", e);
-        }
+        return Instrutor.listarInstrutores();
     }
 
     public static List<Instrutor> listarInstrutoresPorCargo(CargoInstrutor cargo) {
@@ -48,6 +43,8 @@ public class InstrutorController {
         Instrutor.editarInstrutor(instrutor, nome, cpf, login, senha, email, telefone, ativo, cargo, faixa);
         try {
             InstrutorDAO.atualizarInstrutor(instrutor);
+            UsuarioController.recarregarUsuarios();
+            TurmaController.recarregarTurmas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível atualizar o instrutor.", e);
         }
@@ -60,6 +57,8 @@ public class InstrutorController {
         Usuario.desativarUsuario(instrutor);
         try {
             UsuarioDAO.atualizarUsuario(instrutor);
+            UsuarioController.recarregarUsuarios();
+            TurmaController.recarregarTurmas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível desativar o instrutor.", e);
         }

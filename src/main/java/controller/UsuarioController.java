@@ -4,40 +4,40 @@ import dao.UsuarioDAO;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import model.Usuario;
 
 public class UsuarioController {
+
+    static void recarregarUsuarios() throws SQLException {
+        List<Usuario> usuarios = UsuarioDAO.listarUsuarios();
+        Usuario.limparUsuariosEmMemoria();
+        for (Usuario usuario : usuarios) {
+            Usuario.registrarUsuarioEmMemoria(usuario);
+        }
+    }
 
     public static boolean autenticar(String login, String senha) {
         if (login == null || senha == null) {
             return false;
         }
-        try {
-            Usuario usuario = UsuarioDAO.encontrarUsuarioPorLogin(login);
-            if (usuario != null && usuario.validarCredenciais(login, senha)) {
-                Usuario.setIdLogado(usuario.getId());
-                return true;
-            }
-            return Usuario.autenticar(login, senha, listarUsuarios());
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível autenticar o usuário.", e);
-        }
+        return Usuario.autenticar(login, senha);
     }
 
     public static Usuario obterUsuario(int id) {
-        try {
-            return UsuarioDAO.encontrarUsuario(id);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível encontrar o usuário de id: " + id, e);
-        }
+        return Usuario.getUsuario(id);
     }
 
     public static Usuario obterUsuarioPorLogin(String login) {
-        try {
-            return UsuarioDAO.encontrarUsuarioPorLogin(login);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível encontrar o usuário de login: " + login, e);
+        if (login == null) {
+            return null;
         }
+        for (Usuario usuario : Usuario.listarUsuarios()) {
+            if (Objects.equals(login, usuario.getLogin())) {
+                return usuario;
+            }
+        }
+        return null;
     }
 
     public static Usuario getUsuarioLogado() {
@@ -53,11 +53,7 @@ public class UsuarioController {
     }
 
     public static List<Usuario> listarUsuarios() {
-        try {
-            return UsuarioDAO.listarUsuarios();
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível listar os usuários.", e);
-        }
+        return Usuario.listarUsuarios();
     }
 
     public static List<Usuario> listarUsuariosAtivos() {
@@ -77,6 +73,8 @@ public class UsuarioController {
         Usuario.editarUsuario(usuario, nome, cpf, login, senha, email, telefone, ativo);
         try {
             UsuarioDAO.atualizarUsuario(usuario);
+            recarregarUsuarios();
+            TurmaController.recarregarTurmas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível atualizar o usuário.", e);
         }
@@ -89,6 +87,8 @@ public class UsuarioController {
         Usuario.desativarUsuario(usuario);
         try {
             UsuarioDAO.atualizarUsuario(usuario);
+            recarregarUsuarios();
+            TurmaController.recarregarTurmas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível desativar o usuário.", e);
         }

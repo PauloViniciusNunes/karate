@@ -11,30 +11,37 @@ import model.enums.TipoAula;
 
 public class AulaController {
 
+    static void recarregarAulas() throws SQLException {
+        List<Aula> aulas = AulaDAO.listarAulas();
+        Aula.limparAulasEmMemoria();
+        for (Aula aula : aulas) {
+            Aula.registrarAulaEmMemoria(aula);
+        }
+    }
+
     public static Aula criarAula(Turma turma, LocalDate data, TipoAula tipo) {
         Aula aula = Aula.criarAula(turma, data, tipo);
         try {
             AulaDAO.criarAula(aula);
-            return aula;
+            recarregarAulas();
+            Aula recarregada = obterAula(aula.getId());
+            return recarregada != null ? recarregada : aula;
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível criar a aula.", e);
         }
     }
 
     public static Aula obterAula(int id) {
-        try {
-            return AulaDAO.encontrarAula(id);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível encontrar a aula de id: " + id, e);
+        for (Aula aula : Aula.listarAulas()) {
+            if (aula.getId() == id) {
+                return aula;
+            }
         }
+        return null;
     }
 
     public static List<Aula> listarAulas() {
-        try {
-            return AulaDAO.listarAulas();
-        } catch (SQLException e) {
-            throw new IllegalStateException("Não foi possível listar as aulas.", e);
-        }
+        return Aula.listarAulas();
     }
 
     public static List<Aula> listarAulasPorPeriodo(LocalDate inicio, LocalDate fim) {
@@ -68,6 +75,7 @@ public class AulaController {
         Aula.editarAula(aula, data, tipo);
         try {
             AulaDAO.atualizarAula(aula);
+            recarregarAulas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível atualizar a aula.", e);
         }
@@ -80,6 +88,7 @@ public class AulaController {
         aula.cancelarAula();
         try {
             AulaDAO.atualizarAula(aula);
+            recarregarAulas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível cancelar a aula.", e);
         }
@@ -92,6 +101,7 @@ public class AulaController {
         aula.encerrarAula();
         try {
             AulaDAO.atualizarAula(aula);
+            recarregarAulas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível encerrar a aula.", e);
         }
@@ -104,6 +114,7 @@ public class AulaController {
         aula.registrarPresenca(aluno);
         try {
             AulaDAO.salvarPresenca(aula.getId(), aluno.getCpf(), true);
+            recarregarAulas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível registrar a presença.", e);
         }
@@ -116,6 +127,7 @@ public class AulaController {
         aula.registrarFalta(aluno);
         try {
             AulaDAO.salvarPresenca(aula.getId(), aluno.getCpf(), false);
+            recarregarAulas();
         } catch (SQLException e) {
             throw new IllegalStateException("Não foi possível registrar a falta.", e);
         }

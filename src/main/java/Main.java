@@ -1,11 +1,16 @@
+import dao.AulaDAO;
+import dao.TurmaDAO;
+import dao.UsuarioDAO;
 import database.Conexao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import model.*;
-import model.enums.*;
-import view.*;
+import model.Aluno;
+import model.Aula;
+import model.Turma;
+import model.Usuario;
+import view.TelaLogin;
 
 public class Main {
     public static void main(String[] args) {
@@ -23,6 +28,8 @@ public class Main {
                         System.out.println("Versão: " + rs.getString(2));
                     }
                 }
+
+                carregarRegistrosEmMemoria();
             }
         } catch (SQLException e) {
             System.err.println("ERRO ao conectar ao Supabase:");
@@ -31,8 +38,44 @@ public class Main {
             e.printStackTrace();
         }
 
-        Usuario adm = Instrutor.criarInstrutor("Joao", "11111111111", "joaosouza", "1234", "joaovictor@gmail.com", "88 98147-9158", CargoInstrutor.COORDENADOR, Faixa.PRETA);
+        limparTerminal();
 
         TelaLogin.iniciarLogin();
     }
+
+    private static void carregarRegistrosEmMemoria() throws SQLException {
+        Usuario.limparUsuariosEmMemoria();
+        for (Usuario usuario : UsuarioDAO.listarUsuarios()) {
+            Usuario.registrarUsuarioEmMemoria(usuario);
+        }
+
+        Turma.limparTurmasEmMemoria();
+        for (Turma turma : TurmaDAO.listarTurmas()) {
+            for (Aluno aluno : Aluno.listarAlunos()) {
+                if (aluno.getIdTurma() == turma.getIdTurma()) {
+                    aluno.alocarNaTurma(turma);
+                }
+            }
+            Turma.registrarTurmaEmMemoria(turma);
+        }
+
+        Aula.limparAulasEmMemoria();
+        for (Aula aula : AulaDAO.listarAulas()) {
+            Aula.registrarAulaEmMemoria(aula);
+        }
+    }
+
+    public static void limparTerminal() {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            ProcessBuilder pb = os.contains("win")
+                ? new ProcessBuilder("cmd", "/c", "cls")
+                : new ProcessBuilder("clear");
+
+            pb.inheritIO().start().waitFor();
+        } catch (Exception e) {
+            System.out.print("\n".repeat(50));
+        }
+    }
+
 }

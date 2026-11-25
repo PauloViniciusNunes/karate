@@ -110,6 +110,10 @@ public abstract class Usuario {
         }
     }
 
+    public static void limparUsuariosEmMemoria() {
+        listaUsuarios.clear();
+    }
+
     public int getId() {
         return id;
     }
