@@ -1,12 +1,9 @@
 package model;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
-
-import dao.AlunoDAO;
-
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import model.enums.Faixa;
 
 public class Aluno extends Usuario {
@@ -15,11 +12,20 @@ public class Aluno extends Usuario {
     private Date dataNascimento;
     private Faixa faixaAtual;
 
-
     public void verAluno() {
         verUsuario();
         System.out.println("Data de nascimento: " + dataNascimento);
         System.out.println("Faixa atual: " + faixaAtual);
+    }
+
+    public void alocarNaTurma(Turma turma) {
+        if (turma == null) {
+            return;
+        }
+        if (!turma.getAlunos().contains(this)) {
+            turma.getAlunos().add(this);
+        }
+        this.idTurma = turma.getIdTurma();
     }
 
     public void graduarAluno(Faixa faixa) {
@@ -32,11 +38,14 @@ public class Aluno extends Usuario {
         this.dataNascimento = dataNascimento;
         this.faixaAtual = Faixa.BRANCA;
         this.idTurma = idTurma;
-        try {
-            AlunoDAO.criarAluno(this);
-        } catch(SQLException e) {
-             throw new IllegalStateException("Não foi possivel criar o aluno", e);
-        }
+    }
+
+    public Aluno(int id, String nome, String cpf, String login, String senha, String email,
+        String telefone, boolean ativo, Date dataNascimento, int idTurma, Faixa faixaAtual) {
+        super(id, nome, cpf, login, senha, email, telefone, ativo);
+        this.dataNascimento = dataNascimento;
+        this.idTurma = idTurma;
+        this.faixaAtual = faixaAtual != null ? faixaAtual : Faixa.BRANCA;
     }
 
     public static Aluno criarAluno(String nome, String cpf, String login, String senha, String email,
@@ -45,24 +54,35 @@ public class Aluno extends Usuario {
     }
 
     public static void editarAluno(Aluno aluno, String nome, String cpf, String login, String senha, String email,
-        String telefone, boolean ativo, Date dataNascimento, Faixa faixaAtual) {
-            editarUsuario(aluno, nome, cpf, login, senha, email, telefone, ativo);
-            aluno.dataNascimento = dataNascimento;
-            aluno.faixaAtual = faixaAtual;
+        String telefone, boolean ativo, Date dataNascimento) {
+        if (aluno == null) {
+            return;
+        }
+        editarUsuario(aluno, nome, cpf, login, senha, email, telefone, ativo);
+        aluno.dataNascimento = dataNascimento;
     }
 
     public static List<Aluno> listarAlunos() {
-        try {
-            return AlunoDAO.listarAlunos();
-        } catch(SQLException e) {
-             throw new IllegalStateException("Não foi possivel listar os alunos", e);
+        List<Aluno> alunos = new ArrayList<>();
+        for (Usuario usuario : Usuario.listarUsuarios()) {
+            if (usuario instanceof Aluno aluno) {
+                alunos.add(aluno);
+            }
         }
+        return alunos;
     }
 
     public static List<Aluno> buscarAlunosPorNome(String nome) {
+        return buscarAlunosPorNome(nome, listarAlunos());
+    }
+
+    public static List<Aluno> buscarAlunosPorNome(String nome, List<Aluno> origem) {
         List<Aluno> alunos = new ArrayList<>();
-        for(Aluno aluno : listarAlunos()) {
-            if(nome.equals(aluno.getNome())) {
+        if (origem == null || nome == null) {
+            return alunos;
+        }
+        for (Aluno aluno : origem) {
+            if (aluno != null && Objects.equals(nome, aluno.getNome())) {
                 alunos.add(aluno);
             }
         }
@@ -70,9 +90,16 @@ public class Aluno extends Usuario {
     }
 
     public static List<Aluno> listarAlunosPorFaixa(Faixa faixa) {
+        return listarAlunosPorFaixa(faixa, listarAlunos());
+    }
+
+    public static List<Aluno> listarAlunosPorFaixa(Faixa faixa, List<Aluno> origem) {
         List<Aluno> alunos = new ArrayList<>();
-        for(Aluno aluno : listarAlunos()) {
-            if(faixa == aluno.faixaAtual) {
+        if (origem == null) {
+            return alunos;
+        }
+        for (Aluno aluno : origem) {
+            if (aluno != null && faixa == aluno.faixaAtual) {
                 alunos.add(aluno);
             }
         }
@@ -81,20 +108,24 @@ public class Aluno extends Usuario {
 
     public static List<Aluno> listarAlunosPorTurma(Turma turma) {
         List<Aluno> alunos = new ArrayList<>();
-        for(Aluno aluno : turma.getAlunos()) {
+        if (turma == null || turma.getAlunos() == null) {
+            return alunos;
+        }
+        for (Aluno aluno : turma.getAlunos()) {
             alunos.add(aluno);
         }
         return alunos;
     }
 
     public Aluno getAluno(int id) {
-        try {
-            return AlunoDAO.encontrarAluno(id);
-        } catch(SQLException e) {
-             throw new IllegalStateException("Não foi possivel encontrar o aluno de id: " + id, e);
+        for (Aluno aluno : listarAlunos()) {
+            if (aluno.getId() == id) {
+                return aluno;
+            }
         }
+        return null;
     }
-    
+
     public int getIdTurma() {
         return this.idTurma;
     }
@@ -118,5 +149,4 @@ public class Aluno extends Usuario {
     public void setFaixaAtual(Faixa faixaAtual) {
         this.faixaAtual = faixaAtual;
     }
-
 }
