@@ -49,7 +49,7 @@ public class TelaInstrutor implements Leitor {
                 case 10:
                     break;
                 case 11:
-                    gerenciarInstrutores(instrutorLogado);
+                    gerenciarInstrutores();
                     break;
                 default:
                     break;
@@ -87,7 +87,7 @@ public class TelaInstrutor implements Leitor {
         System.out.println("12 - Ver Instrutores");
     }
 
-    private static void menuGerenciarInstrutor(Instrutor instrutorLogado) {
+    private static void menuGerenciarInstrutor() {
         System.out.println("\n===============================================================");
         System.out.println("0 - Sair");
         System.out.println("1 - Cadastrar Instrutor");
@@ -96,13 +96,13 @@ public class TelaInstrutor implements Leitor {
         System.out.print("Opção: ");
     }
 
-    private static void gerenciarInstrutores(Instrutor instrutorLogado) {
+    private static void gerenciarInstrutores() {
         int op;
         String nome, cpf, login, senha, email, telefone, cargo, faixa;
         CargoInstrutor cargoInstrutor;
         Faixa faixaInstrutor;
         do {
-            menuGerenciarInstrutor(instrutorLogado);
+            menuGerenciarInstrutor();
             op = sc.nextInt();
             sc.nextLine();
             if (op == 1) {
