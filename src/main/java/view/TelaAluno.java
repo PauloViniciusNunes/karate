@@ -20,12 +20,16 @@ public class TelaAluno implements Leitor {
                 case 0:
                     System.out.println("Encerrando...");
                     break;
-
+                
                 case 1:
-                    verTurma(alunoLogado);
+                    verAluno(alunoLogado);
                     break;
 
                 case 2:
+                    verTurma(alunoLogado);
+                    break;
+
+                case 3:
                     listarAulas(alunoLogado);
                     break;
 
@@ -39,8 +43,9 @@ public class TelaAluno implements Leitor {
 
     private static void menu(Aluno alunoLogado) {
         System.out.println("0 - Sair");
-        System.out.println("1 - Ver dados da turma");
-        System.out.println("2 - Ver lista de aulas que participou");
+        System.out.println("1 - Ver dados do aluno");
+        System.out.println("2 - Ver dados da turma");
+        System.out.println("3 - Ver lista de aulas que participou");
     }
 
     private static void verTurma(Aluno alunoLogado) {
@@ -56,6 +61,10 @@ public class TelaAluno implements Leitor {
         } catch (IllegalStateException e) {
             System.out.println("Não foi possível encontrar a turma.");
         }
+    }
+
+    private static void verAluno(Aluno alunoLOgado) {
+        alunoLOgado.verAluno();
     }
 
     private static void listarAulas(Aluno alunoLogado) {
