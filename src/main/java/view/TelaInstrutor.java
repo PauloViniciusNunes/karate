@@ -254,22 +254,117 @@ public class TelaInstrutor implements Leitor {
     }
 
     private static void verTurmas() {
-        List<Turma> turmas = TurmaController.listarTurmas();
-        if (turmas.isEmpty()) {
-            System.out.println("Nenhuma turma cadastrada.");
+        int op;
+        do {
+            System.out.println("\n===============================================================");
+            System.out.println("0 - Voltar");
+            System.out.println("1 - Listar turmas");
+            System.out.println("2 - Listar turmas por faixa");
+            System.out.println("3 - Buscar turma por faixa");
+            op = lerInt("Opção: ");
+
+            if (op == 1) {
+                exibirTurmas(TurmaController.listarTurmas(), "Nenhuma turma cadastrada.");
+            } else if (op == 2) {
+                Faixa faixa = lerFaixa("Faixa: ");
+                if (faixa == null) {
+                    continue;
+                }
+                exibirTurmas(TurmaController.listarTurmasPorFaixa(faixa),
+                        "Nenhuma turma encontrada para a faixa " + faixa + ".");
+            } else if (op == 3) {
+                Faixa faixa = lerFaixa("Faixa: ");
+                if (faixa == null) {
+                    continue;
+                }
+                Turma turma = TurmaController.buscarTurmaPorFaixa(faixa);
+                if (turma == null) {
+                    System.out.println("Nenhuma turma encontrada para a faixa " + faixa + ".");
+                } else {
+                    exibirTurma(turma);
+                }
+            } else if (op != 0) {
+                System.out.println("Opção inválida!");
+            }
+        } while (op != 0);
+    }
+
+    private static void exibirTurmas(List<Turma> turmas, String mensagemVazia) {
+        if (turmas == null || turmas.isEmpty()) {
+            System.out.println(mensagemVazia);
             return;
         }
         for (Turma turma : turmas) {
-            System.out.println("--------------------------------");
-            turma.verTurma();
-            System.out.println("Quantidade de alunos: " + turma.getAlunos().size());
+            exibirTurma(turma);
         }
     }
 
+    private static void exibirTurma(Turma turma) {
+        System.out.println("--------------------------------");
+        turma.verTurma();
+        System.out.println("Quantidade de alunos: " + turma.getAlunos().size());
+    }
+
     private static void verAulas() {
-        List<Aula> aulas = AulaController.listarAulas();
-        if (aulas.isEmpty()) {
-            System.out.println("Nenhuma aula cadastrada.");
+        int op;
+        do {
+            System.out.println("\n===============================================================");
+            System.out.println("0 - Voltar");
+            System.out.println("1 - Listar aulas");
+            System.out.println("2 - Listar aulas por período");
+            System.out.println("3 - Listar aulas por turma");
+            System.out.println("4 - Listar aulas por tipo");
+            System.out.println("5 - Listar aulas por aluno");
+            op = lerInt("Opção: ");
+
+            if (op == 1) {
+                exibirAulas(AulaController.listarAulas(), "Nenhuma aula cadastrada.");
+            } else if (op == 2) {
+                LocalDate inicio = lerData("Data inicial (yyyy-MM-dd): ");
+                LocalDate fim = lerData("Data final (yyyy-MM-dd): ");
+                if (inicio == null || fim == null) {
+                    continue;
+                }
+                if (fim.isBefore(inicio)) {
+                    System.out.println("A data final não pode ser anterior à data inicial!");
+                    continue;
+                }
+                exibirAulas(AulaController.listarAulasPorPeriodo(inicio, fim),
+                        "Nenhuma aula encontrada no período informado.");
+            } else if (op == 3) {
+                int idTurma = lerInt("Id da turma: ");
+                Turma turma = TurmaController.obterTurma(idTurma);
+                if (turma == null) {
+                    System.out.println("Turma não encontrada!");
+                    continue;
+                }
+                exibirAulas(AulaController.listarAulasPorTurma(turma),
+                        "Nenhuma aula encontrada para esta turma.");
+            } else if (op == 4) {
+                TipoAula tipo = lerTipoAula();
+                if (tipo == null) {
+                    continue;
+                }
+                exibirAulas(AulaController.listarAulasPorTipo(tipo),
+                        "Nenhuma aula encontrada para o tipo " + tipo + ".");
+            } else if (op == 5) {
+                int idAluno = lerInt("Id do aluno: ");
+                Aluno aluno = AlunoController.obterAluno(idAluno);
+                if (aluno == null) {
+                    System.out.println("Aluno não encontrado!");
+                    continue;
+                }
+                exibirAulas(AulaController.listarAulasPorAluno(aluno),
+                        "Nenhuma aula encontrada para este aluno.");
+            } else if (op != 0) {
+                System.out.println("Opção inválida!");
+            }
+        } while (op != 0);
+    }
+
+    private static void exibirAulas(List<Aula> aulas, String mensagemVazia) {
+        if (aulas == null || aulas.isEmpty()) {
+            System.out.println(mensagemVazia);
             return;
         }
         for (Aula aula : aulas) {
@@ -281,9 +376,51 @@ public class TelaInstrutor implements Leitor {
     }
 
     private static void verAlunos() {
-        List<Aluno> alunos = AlunoController.listarAlunos();
-        if (alunos.isEmpty()) {
-            System.out.println("Nenhum aluno cadastrado.");
+        int op;
+        do {
+            System.out.println("\n===============================================================");
+            System.out.println("0 - Voltar");
+            System.out.println("1 - Listar alunos");
+            System.out.println("2 - Listar alunos por faixa");
+            System.out.println("3 - Listar alunos por turma");
+            System.out.println("4 - Buscar alunos por nome");
+            op = lerInt("Opção: ");
+
+            if (op == 1) {
+                exibirAlunos(AlunoController.listarAlunos(), "Nenhum aluno cadastrado.");
+            } else if (op == 2) {
+                Faixa faixa = lerFaixa("Faixa: ");
+                if (faixa == null) {
+                    continue;
+                }
+                exibirAlunos(AlunoController.listarAlunosPorFaixa(faixa),
+                        "Nenhum aluno encontrado para a faixa " + faixa + ".");
+            } else if (op == 3) {
+                int idTurma = lerInt("Id da turma: ");
+                Turma turma = TurmaController.obterTurma(idTurma);
+                if (turma == null) {
+                    System.out.println("Turma não encontrada!");
+                    continue;
+                }
+                exibirAlunos(AlunoController.listarAlunosPorTurma(turma),
+                        "Nenhum aluno encontrado nesta turma.");
+            } else if (op == 4) {
+                String nome = lerTexto("Nome do aluno: ");
+                if (nome.isEmpty()) {
+                    System.out.println("Informe o nome do aluno!");
+                    continue;
+                }
+                exibirAlunos(AlunoController.buscarAlunosPorNome(nome),
+                        "Nenhum aluno encontrado com o nome informado.");
+            } else if (op != 0) {
+                System.out.println("Opção inválida!");
+            }
+        } while (op != 0);
+    }
+
+    private static void exibirAlunos(List<Aluno> alunos, String mensagemVazia) {
+        if (alunos == null || alunos.isEmpty()) {
+            System.out.println(mensagemVazia);
             return;
         }
         for (Aluno aluno : alunos) {

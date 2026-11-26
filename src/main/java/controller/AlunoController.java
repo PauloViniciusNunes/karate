@@ -3,7 +3,6 @@ package controller;
 import dao.AlunoDAO;
 import dao.UsuarioDAO;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import model.Aluno;
@@ -48,16 +47,7 @@ public class AlunoController {
     }
 
     public static List<Aluno> listarAlunosPorTurma(Turma turma) {
-        List<Aluno> alunosTurma = new ArrayList<>();
-        if (turma == null) {
-            return alunosTurma;
-        }
-        for (Aluno aluno : listarAlunos()) {
-            if (aluno.getIdTurma() == turma.getIdTurma()) {
-                alunosTurma.add(aluno);
-            }
-        }
-        return alunosTurma;
+        return Aluno.listarAlunosPorTurma(turma);
     }
 
     public static void editarAluno(Aluno aluno, String nome, String cpf, String login, String senha, String email, String telefone, boolean ativo, Date dataNascimento, Faixa faixaAtual) {
