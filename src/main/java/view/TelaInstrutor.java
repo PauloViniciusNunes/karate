@@ -431,9 +431,32 @@ public class TelaInstrutor implements Leitor {
     }
 
     private static void verInstrutores() {
-        List<Instrutor> instrutores = InstrutorController.listarInstrutores();
-        if (instrutores.isEmpty()) {
-            System.out.println("Nenhum instrutor cadastrado.");
+        int op;
+        do {
+            System.out.println("\n===============================================================");
+            System.out.println("0 - Voltar");
+            System.out.println("1 - Listar instrutores");
+            System.out.println("2 - Listar instrutores por cargo");
+            op = lerInt("Opção: ");
+
+            if (op == 1) {
+                exibirInstrutores(InstrutorController.listarInstrutores(), "Nenhum instrutor cadastrado.");
+            } else if (op == 2) {
+                CargoInstrutor cargo = lerCargoInstrutor("Cargo (AUXILIAR, SENSEI, COORDENADOR): ");
+                if (cargo == null) {
+                    continue;
+                }
+                exibirInstrutores(InstrutorController.listarInstrutoresPorCargo(cargo),
+                        "Nenhum instrutor encontrado para o cargo " + cargo + ".");
+            } else if (op != 0) {
+                System.out.println("Opção inválida!");
+            }
+        } while (op != 0);
+    }
+
+    private static void exibirInstrutores(List<Instrutor> instrutores, String mensagemVazia) {
+        if (instrutores == null || instrutores.isEmpty()) {
+            System.out.println(mensagemVazia);
             return;
         }
         for (Instrutor instrutor : instrutores) {
@@ -861,6 +884,15 @@ public class TelaInstrutor implements Leitor {
             System.out.println("Faixa inválida! Opções: BRANCA, AMARELA, VERMELHA, LARANJA, VERDE, ROXA, MARROM, PRETA.");
         }
         return faixa;
+    }
+
+    private static CargoInstrutor lerCargoInstrutor(String prompt) {
+        String entrada = lerTexto(prompt);
+        CargoInstrutor cargo = CargoInstrutor.getCargoByName(entrada);
+        if (cargo == null) {
+            System.out.println("Cargo inválido! Opções: AUXILIAR, SENSEI, COORDENADOR.");
+        }
+        return cargo;
     }
 
     private static TipoAula lerTipoAula() {
